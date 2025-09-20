@@ -28,7 +28,7 @@ export default function CharacterCard({ character, elements }: { character: any,
       <h2 className="text-xl font-bold mb-2">{character.name}</h2>
       <div className="mb-2">
         <span className="text-sm mr-2">{character.region || "Outworld"}</span>
-        <span className="text-sm mr-2">{character.rarity}★</span>
+        <span className="text-sm">{character.rarity}★</span>
       </div>
       <div className="mb-2">
         {elementIcon && <img src={elementIcon} alt={character.elementText} className="inline-block w-6 h-6 mr-2" />}

@@ -108,7 +108,6 @@ export function CharacterTable({ characters, elements, mappersForTable, rowSelec
   const colSelectorMapper = mappersForTable[colSelector];
   const rowSelectorMapper = mappersForTable[rowSelector];
   let tableHeader = (weapon: string) => {
-    console.log(`${weapon} to ${colSelectorMapper.label} of ${colSelectorMapper.values.find(e => e.name === weapon)?.name}`)
     const img = colSelectorMapper.values.find(e => e.name === weapon)?.imgSrc
     return (
       <th key={weapon} style={{
