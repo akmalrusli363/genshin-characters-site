@@ -1,13 +1,8 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { buildPairFieldMappers, ImagePair, pivot } from "./helpers";
-import elements from "./elements.customization.json";
-import { Character } from "./data/character";
-
-// Sample data
-// const elementList = createFieldMapper(characters, "elementText", "Element");
-// const weaponList = createFieldMapper(characters, "weaponText", "Weapon");
-// const regionList = createFieldMapper(characters, "region", "Region");
+import Character from "./data/character"
+import Element from "./data/elements";
 
 const weaponImageMap: Record<string, string> = {
   "Sword": "/assets/Icon_Sword.png",
@@ -17,32 +12,32 @@ const weaponImageMap: Record<string, string> = {
   "Catalyst": "/assets/Icon_Catalyst.png",
 };
 
-const config: {
+const config: (elements: Element[]) => {
   [key: string]: {
     field: keyof Character;
     label: string;
     mapping: (item: Character) => ImagePair;
   };
-} = {
+} = (elements: Element[]) => {return {
   weaponText: {
-    field: "weaponText", label: "Weapons", mapping: (c) => ({
+    field: "weaponText", label: "Weapons", mapping: (c: Character) => ({
       name: c.weaponText,
       imgSrc: weaponImageMap[c.weaponText] || ""
     })
   },
   elementText: {
-    field: "elementText", label: "Elements", mapping: (c) => ({
+    field: "elementText", label: "Elements", mapping: (c: Character) => ({
       name: c.elementText,
-      imgSrc: elements.find(e => e.name === c.elementText)?.images.base64 || ""
+      imgSrc: elements.find(e => e.name === c.elementText)?.imageBase64 || ""
     })
   },
   region: {
-    field: "region", label: "Regions", mapping: (c) => ({
+    field: "region", label: "Regions", mapping: (c: Character) => ({
       name: c.region,
       imgSrc: "" // No region images available in data
     })
   }
-};
+}};
 
 function getCharactersByElementAndWeapon(characters: Character[], element: string, weapon: string) {
   return characters.filter(
@@ -50,7 +45,10 @@ function getCharactersByElementAndWeapon(characters: Character[], element: strin
   );
 }
 
-export default function CharacterTableView({ characters }: { characters: Character[] }) {
+export default function CharacterTableView({ characters, elements }: {
+  characters: Character[],
+  elements: Element[]
+}) {
   const [tableColumnField, setTableColumnField] = useState("elementText");
   const [tableRowField, setTableRowField] = useState("weaponText");
 
@@ -60,13 +58,17 @@ export default function CharacterTableView({ characters }: { characters: Charact
     setTableRowField(temp);
   };
 
-  const mappers = buildPairFieldMappers(characters, config);
+  const mappers = buildPairFieldMappers(characters, config(elements));
+  const minMdWidth = 768;
 
   return (
     <section className="items-center justify-items-center lg:mx-16">
-      <div className="flex items-center gap-x-8 gap-y-4 flex-wrap mb-4 justify-center">
+      <div className="flex items-center gap-2 md:hidden mb-4">
+          Column <SwapIcon /> Row
+      </div>
+      <div className="flex items-center gap-x-2 md:gap-x-8 gap-y-4 flex-wrap mb-4 justify-center">
         <div className="flex items-center gap-2">
-          <label htmlFor="column-selector" className="font-semibold">Columns:</label>
+          <label htmlFor="column-selector" className="font-semibold hidden md:block">Columns:</label>
           <select id="column-selector" value={tableColumnField} onChange={e => setTableColumnField(e.target.value)} className="bg-black/40 border border-white/30 rounded px-2 py-1">
             {Object.entries(mappers).map((f, k) => (
               <option key={k} value={f[0]} disabled={f[0] === tableRowField}>
@@ -79,7 +81,7 @@ export default function CharacterTableView({ characters }: { characters: Charact
           <SwapIcon />
         </button>
         <div className="flex items-center gap-2">
-          <label htmlFor="row-selector" className="font-semibold">Rows:</label>
+          <label htmlFor="row-selector" className="font-semibold hidden md:block">Rows:</label>
           <select id="row-selector" value={tableRowField} onChange={e => setTableRowField(e.target.value)} className="bg-black/40 border border-white/30 rounded px-2 py-1">
             {Object.entries(mappers).map((f, k) => (
               <option key={k} value={f[0]} disabled={f[0] === tableColumnField}>
@@ -90,15 +92,16 @@ export default function CharacterTableView({ characters }: { characters: Charact
         </div>
       </div>
       <div className="w-[85vw] lg:w-auto overflow-x-auto">
-        <CharacterTable characters={characters} mappersForTable={mappers} rowSelector={tableRowField} colSelector={tableColumnField} />
+        <CharacterTable characters={characters} mappersForTable={mappers} rowSelector={tableRowField} colSelector={tableColumnField} elements={elements} />
       </div>
     </section>
   )
 }
 
-export function CharacterTable({ characters, mappersForTable, rowSelector, colSelector }: {
+export function CharacterTable({ characters, elements, mappersForTable, rowSelector, colSelector }: {
   characters: Character[],
-  mappersForTable: { [key: string]: { label: string, values: ImagePair[] } },
+  elements: Element[],
+  mappersForTable: { [key: string]: { label: string; values: ImagePair[] } },
   rowSelector: any, colSelector: any
 }) {
   const characterList = pivot<Character>(characters, rowSelector, colSelector);

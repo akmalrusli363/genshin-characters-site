@@ -36,7 +36,7 @@ export interface Url {
   fandom: string;
 }
 
-export interface Character {
+export default interface Character {
   id: number;
   name: string;
   title: string;

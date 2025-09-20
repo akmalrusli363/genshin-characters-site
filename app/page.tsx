@@ -4,16 +4,9 @@ import { useState, useEffect, useRef } from "react";
 import { getUnique } from "./helpers";
 import CharacterTableView from "./character-table";
 import CharacterCard from "./character-card";
-import { Character } from "./data/character";
-import { fetchWithEtag } from "./utils/etagCache";
-
-const baseUrl = "https://genshin-db-api.vercel.app/api/v5/"
-const charactersUrl = "characters"
-const getAllParameters = new URLSearchParams({
-  query: "names",
-  matchCategories: "true",
-  verboseCategories: "true"
-})
+import Character from "./data/character"
+import Element from './data/elements';
+import { getAllCharacters, getAllElements } from "./api/constants";
 
 export default function Home() {
   // State for filters
@@ -52,16 +45,20 @@ export default function Home() {
   }, []);
 
   const [characters, setCharacters] = useState<Character[]>([]);
+  const [elements, setElements] = useState<Element[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchWithEtag<Character[]>(`${baseUrl + charactersUrl}?${getAllParameters}`)
-      .then(data => {
-        data.sort((a, b) => a.version.localeCompare(b.version));
-        setCharacters(data);
+    Promise.all([
+      getAllCharacters(),
+      getAllElements()
+    ]).then(([characterData, elementData]) => {
+        characterData.sort((a, b) => a.version.localeCompare(b.version));
+        setCharacters(characterData);
+        setElements(elementData);
       })
-      .catch(err => console.error(err))
+      .catch(err => setError(err.message))
       .finally(() => setLoading(false));
   }, []);
 
@@ -70,9 +67,9 @@ export default function Home() {
   if (!characters) return <p className="center text-center text-2xl w-screen p-8 h-screen">No characters found</p>;
 
   // Get unique options
-  const regions = getUnique(characters, "region");
-  const elements = getUnique(characters, "elementText");
-  const weapons = getUnique(characters, "weaponText");
+  const regions = getUnique(characters, "region") as string[];
+  const uniqueElements = getUnique(characters, "elementText") as string[];
+  const weapons = getUnique(characters, "weaponText") as string[];
 
   // Filter characters based on selection
   const filteredCharacters = characters
@@ -101,7 +98,7 @@ export default function Home() {
             </select>
             <select value={element} onChange={e => setElement(e.target.value)} className="bg-black/40 border border-white/30 rounded px-2 py-1 flex-grow lg:flex-grow-0">
               <option value="">All Elements</option>
-              {elements.map(e => <option key={e} value={e}>{e}</option>)}
+              {uniqueElements.map(e => <option key={e} value={e}>{e}</option>)}
             </select>
             <select value={weapon} onChange={e => setWeapon(e.target.value)} className="bg-black/40 border border-white/30 rounded px-2 py-1 flex-grow lg:flex-grow-0">
               <option value="">All Weapons</option>
@@ -118,7 +115,7 @@ export default function Home() {
 
           <div ref={cardContainerRef} className="flex gap-6 flex-wrap justify-center flex-grow">
             {filteredCharacters.map((character: any, idx: number) =>
-              <CharacterCard key={character.id || idx} character={character} />
+              <CharacterCard key={character.id || idx} character={character} elements={elements} />
             )}
           </div>
 
@@ -131,7 +128,7 @@ export default function Home() {
           <h2 className="text-3xl font-bold text-center mt-8 mb-8">Character table</h2>
           <div className="mt-8 w-full lg:w-auto">
             {/* <div className="overflow-x-auto  w-full lg:w-auto"> */}
-            <CharacterTableView characters={characters} />
+            <CharacterTableView characters={characters} elements={elements} />
             {/* </div> */}
           </div>
         </section>
