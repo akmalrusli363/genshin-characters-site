@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { buildPairFieldMappers, ImagePair, pivot } from "./helpers";
-import characters from "./characters.customization.json";
 import elements from "./elements.customization.json";
+import { Character } from "./data/character";
 
 // Sample data
 // const elementList = createFieldMapper(characters, "elementText", "Element");
@@ -19,9 +19,9 @@ const weaponImageMap: Record<string, string> = {
 
 const config: {
   [key: string]: {
-    field: keyof typeof characters[0];
+    field: keyof Character;
     label: string;
-    mapping: (item: typeof characters[0]) => ImagePair;
+    mapping: (item: Character) => ImagePair;
   };
 } = {
   weaponText: {
@@ -43,17 +43,14 @@ const config: {
     })
   }
 };
-const mappers = buildPairFieldMappers(characters.sort((a, b) => a.version.localeCompare(b.version)), config);
 
-function getCharactersByElementAndWeapon(element: string, weapon: string) {
+function getCharactersByElementAndWeapon(characters: Character[], element: string, weapon: string) {
   return characters.filter(
     (char) => char.elementText === element && char.weaponText === weapon
   );
 }
 
-
-export default function CharacterTableView() {
-  // State for table pivoting
+export default function CharacterTableView({ characters }: { characters: Character[] }) {
   const [tableColumnField, setTableColumnField] = useState("elementText");
   const [tableRowField, setTableRowField] = useState("weaponText");
 
@@ -62,6 +59,8 @@ export default function CharacterTableView() {
     setTableColumnField(tableRowField);
     setTableRowField(temp);
   };
+
+  const mappers = buildPairFieldMappers(characters, config);
 
   return (
     <section className="items-center justify-items-center lg:mx-16">
@@ -91,17 +90,23 @@ export default function CharacterTableView() {
         </div>
       </div>
       <div className="w-[85vw] lg:w-auto overflow-x-auto">
-        <CharacterTable rowSelector={tableRowField} colSelector={tableColumnField} />
+        <CharacterTable characters={characters} mappersForTable={mappers} rowSelector={tableRowField} colSelector={tableColumnField} />
       </div>
     </section>
   )
 }
 
-export function CharacterTable({ rowSelector, colSelector }: { rowSelector: any, colSelector: any }) {
-  const characterList = pivot(characters, rowSelector, colSelector);
+export function CharacterTable({ characters, mappersForTable, rowSelector, colSelector }: {
+  characters: Character[],
+  mappersForTable: { [key: string]: { label: string, values: ImagePair[] } },
+  rowSelector: any, colSelector: any
+}) {
+  const characterList = pivot<Character>(characters, rowSelector, colSelector);
+  const colSelectorMapper = mappersForTable[colSelector];
+  const rowSelectorMapper = mappersForTable[rowSelector];
   let tableHeader = (weapon: string) => {
-    console.log(`${weapon} to ${mappers[colSelector].label} of ${mappers[colSelector].values.find(e => e.name === weapon)?.name}`)
-    const img = mappers[colSelector].values.find(e => e.name === weapon)?.imgSrc
+    console.log(`${weapon} to ${colSelectorMapper.label} of ${colSelectorMapper.values.find(e => e.name === weapon)?.name}`)
+    const img = colSelectorMapper.values.find(e => e.name === weapon)?.imgSrc
     return (
       <th key={weapon} style={{
         border: "1px solid #ccc", padding: "1rem", textAlign: "center",
@@ -138,8 +143,7 @@ export function CharacterTable({ rowSelector, colSelector }: { rowSelector: any,
     );
   };
   let tableRowLead = (element: string) => {
-    console.log(`${element} to ${mappers[rowSelector].label} of ${mappers[rowSelector].values.find(e => e.name === element)?.name}`)
-    const img = mappers[rowSelector].values.find(e => e.name === element)?.imgSrc
+    const img = rowSelectorMapper.values.find(e => e.name === element)?.imgSrc
     return (
       <td style={{
         border: "1px solid #ccc", padding: "8px", fontWeight: "bold",
@@ -153,15 +157,14 @@ export function CharacterTable({ rowSelector, colSelector }: { rowSelector: any,
     )
   }
 
-  // header -> cols (weapon) | rows (element)
   return (
     <table>
       <thead>
         <tr>
           <th style={{ border: "1px solid #ccc", padding: "8px" }}>
-            {mappers[colSelector].label} <br />---------<br /> {mappers[rowSelector].label}
+            {colSelectorMapper.label} <br />---------<br /> {rowSelectorMapper.label}
           </th>
-          {mappers[colSelector].values.map((weapon) => tableHeader(weapon.name))}
+          {colSelectorMapper.values.map((weapon) => tableHeader(weapon.name))}
         </tr>
       </thead>
       <tbody>
@@ -170,7 +173,7 @@ export function CharacterTable({ rowSelector, colSelector }: { rowSelector: any,
           .map((element) => (
             <tr key={element}>
               {tableRowLead(element)}
-              {mappers[colSelector].values.map((weapon) => (
+              {colSelectorMapper.values.map((weapon) => (
                 tableCell(element, weapon.name)
               ))}
             </tr>

@@ -14,13 +14,14 @@ export default function CharacterCard({ character }: { character: any }) {
   let avatarIcon = character.images.filename_icon || "";
   let enkaAvatarIcon = "https://enka.network/ui/" + avatarIcon + ".png";
   return (
-    <div className="w-[12rem] h-[16rem] bg-white/10 border border-white/20 rounded-xl p-4 flex flex-col items-center backdrop-blur-sm">
-      <div className="relative w-full h-[10rem] mb-4">
+    <div className="w-[8rem] md:w-[12rem] h-[16rem] bg-white/10 border border-white/20 rounded-xl p-2 sm:p-4 flex flex-col items-center backdrop-blur-sm">
+      <div className="relative w-full h-[6rem] md:h-[10rem] mb-4">
         <Image
           src={enkaAvatarIcon}
           alt={character.name}
-          layout="fill"
-          style={{ objectFit: "contain" }}
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          style={{ objectFit: "contain", objectPosition: "center", display: "block" }}
           className="rounded-lg"
         />
       </div>
@@ -33,7 +34,7 @@ export default function CharacterCard({ character }: { character: any }) {
         {elementIcon && <img src={elementIcon} alt={character.elementText} className="inline-block w-6 h-6 mr-2" />}
         {weaponIconUrl && <img src={weaponIconUrl} alt={character.weaponText} className="inline-block w-8 h-8 mr-2" />}
       </div>
-      <p className="text-sm text-center">{character.elementText} - {character.weaponText}</p>
+      <p className="text-xs sm:text-sm text-center">{character.elementText} - {character.weaponText}</p>
     </div>
   );
 }

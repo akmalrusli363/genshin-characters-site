@@ -2,10 +2,18 @@
 
 import { useState, useEffect, useRef } from "react";
 import { getUnique } from "./helpers";
-import characters from "./characters.customization.json";
 import CharacterTableView from "./character-table";
 import CharacterCard from "./character-card";
+import { Character } from "./data/character";
+import { fetchWithEtag } from "./utils/etagCache";
 
+const baseUrl = "https://genshin-db-api.vercel.app/api/v5/"
+const charactersUrl = "characters"
+const getAllParameters = new URLSearchParams({
+  query: "names",
+  matchCategories: "true",
+  verboseCategories: "true"
+})
 
 export default function Home() {
   // State for filters
@@ -21,7 +29,9 @@ export default function Home() {
       if (!cardContainerRef.current) return;
 
       const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
-      const cardWidth = 12 * rootFontSize; // w-[15rem] -> 240px at 16px base
+      const minMdWidth = 768;
+      const isMd = window.innerWidth >= minMdWidth;
+      const cardWidth = (isMd? 12 : 8) * rootFontSize; // w-[15rem] -> 240px at 16px base
       const cardHeight = 16 * rootFontSize; // h-[20rem] -> 320px at 16px base
       const gap = 1.5 * rootFontSize; // gap-6 -> 1.5rem
 
@@ -29,7 +39,7 @@ export default function Home() {
       const availableHeight = cardContainerRef.current.clientHeight;
 
       const cardsPerRow = Math.max(1, Math.floor((availableWidth + gap) / (cardWidth + gap)));
-      const rows = Math.max(1, Math.floor((availableHeight + gap) / (cardHeight + gap)));
+      const rows = Math.max(3, Math.floor((availableHeight + gap) / (cardHeight + gap)));
       const cappedRows = Math.min(rows, 4);
       const totalCards = cardsPerRow * cappedRows;
 
@@ -40,6 +50,24 @@ export default function Home() {
     window.addEventListener('resize', calculateNumToShow);
     return () => window.removeEventListener('resize', calculateNumToShow);
   }, []);
+
+  const [characters, setCharacters] = useState<Character[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchWithEtag<Character[]>(`${baseUrl + charactersUrl}?${getAllParameters}`)
+      .then(data => {
+        data.sort((a, b) => a.version.localeCompare(b.version));
+        setCharacters(data);
+      })
+      .catch(err => console.error(err))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <p className="center text-center text-2xl font-bold w-screen p-8 h-screen">Loading…</p>;
+  if (error) return <p className="center text-center text-2xl w-screen p-8 h-screen">Error: {error}</p>;
+  if (!characters) return <p className="center text-center text-2xl w-screen p-8 h-screen">No characters found</p>;
 
   // Get unique options
   const regions = getUnique(characters, "region");
@@ -60,7 +88,10 @@ export default function Home() {
   return (
     <div className="font-sans grid grid-rows-[1fr_auto] min-h-screen justify-items-center bg-gradient-to-b from-blue-900 via-black to-black text-white">
       <main className="w-full p-8 flex flex-col">
-        <h1 className="text-5xl text-center mb-16">Genshin Characters</h1>
+        <header className="text-center mb-8 md:mb-16">
+          <h1 className="text-3xl md:text-5xl mb-4">Genshin Characters</h1>
+          <div className="text-l">Fetched from <i><u>genshin-db-api.vercel.app</u></i></div>
+        </header>
 
         <section className="md:ph-24 w-full lg:w-auto">
           <div className="flex flex-wrap gap-4 mb-8">
@@ -100,7 +131,7 @@ export default function Home() {
           <h2 className="text-3xl font-bold text-center mt-8 mb-8">Character table</h2>
           <div className="mt-8 w-full lg:w-auto">
             {/* <div className="overflow-x-auto  w-full lg:w-auto"> */}
-              <CharacterTableView />
+            <CharacterTableView characters={characters} />
             {/* </div> */}
           </div>
         </section>
