@@ -1,4 +1,10 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Genshin Character Site
+
+A site project to demonstrate Genshin Impact character list, table, and character details using [Next.js](https://nextjs.org), using unofficial Genshin-db API [genshin-db-api.vercel.app](genshin-db-api.vercel.app) as API source data.
+
+For reference, you can visit [theBowja/genshin-db-api](https://github.com/theBowja/genshin-db-api) for more detail, or use [genshin-db](https://www.npmjs.com/package/genshin-db) package on your Node.js project for practical usages with built-in functions.
+
+This project built using [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
 
@@ -19,6 +25,32 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+
+## Features
+
+This application displays a list of Genshin Impact characters fetched from a public API and presents them in two ways:
+
+### Character Card List
+
+- A responsive, paginated grid of character cards.
+- Filtering options are available for region, element, and weapon type.
+- A search bar allows for filtering characters by name.
+
+### Character Table
+
+- A pivot table that groups characters by different attributes.
+- You can choose which attributes (Elements, Weapons, Regions) to use for rows and columns.
+- This provides a quick and easy way to see all characters that match a specific combination, for example, all "Pyro" characters who use a "Sword".
+
+Here is the example of the character table, shortlisted & names only, for reference:
+
+| Elements \ Weapons | Sword | Claymore | Polearm |
+| :--- | :--- | :--- | :--- |
+| **Anemo** | Jean, Kaedehara Kazuha | Sayu | Xiao |
+| **Cryo** | Kaeya, Kamisato Ayaka | Chongyun, Eula | Rosaria, Shenhe |
+| **Pyro** | Bennett | Diluc, Xinyan | Hu Tao, Xiangling |
+
+*(The actual table in the app shows character icons for a quick visual reference.)*
 
 ## Learn More
 
