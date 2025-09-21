@@ -106,33 +106,6 @@ function CharacterCardCollection({ characters, elements }: {
     }
   };
 
-  const renderPageNumbers = () => {
-    if (totalPages <= 1) return null;
-    if (totalPages <= 7) {
-      return Array.from({ length: totalPages }, (_, i) => i + 1);
-    }
-
-    const pageNumbers: (number | string)[] = [];
-    const startPage = Math.max(2, currentPage - 2);
-    const endPage = Math.min(totalPages - 1, currentPage + 2);
-
-    pageNumbers.push(1);
-    if (startPage > 2) {
-      pageNumbers.push('...');
-    }
-
-    for (let i = startPage; i <= endPage; i++) {
-      pageNumbers.push(i);
-    }
-
-    if (endPage < totalPages - 1) {
-      pageNumbers.push('...');
-    }
-    pageNumbers.push(totalPages);
-
-    return pageNumbers;
-  };
-
   return (
     <section className="md:ph-24 w-full lg:w-auto">
       <div className="flex flex-wrap gap-4 mb-8">
@@ -163,41 +136,83 @@ function CharacterCardCollection({ characters, elements }: {
         )}
       </div>
 
-      {totalPages > 1 && (
-        <div className="mt-8 flex justify-center items-center gap-2 flex-wrap">
-          <button
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-            className="px-3 py-1 bg-black/40 border border-white/30 rounded disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Previous
-          </button>
-          {renderPageNumbers()?.map((page, index) =>
-            typeof page === 'number' ? (
-              <button
-                key={page}
-                onClick={() => handlePageChange(page)}
-                className={`px-3 py-1 rounded ${currentPage === page ? 'bg-white/30' : 'bg-black/40'} border border-white/30`}
-              >
-                {page}
-              </button>
-            ) : (
-              <span key={`ellipsis-${index}`} className="px-3 py-1">...</span>
-            )
-          )}
-          <button
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            className="px-3 py-1 bg-black/40 border border-white/30 rounded disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Next
-          </button>
-        </div>
-      )}
+      <PaginationControls
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
 
       <div className="mt-8 text-sm text-white/50 text-center">
         Showing {paginatedCharacters.length} of {allFilteredCharacters.length} characters.
       </div>
     </section>
   )
+}
+
+function PaginationControls({ currentPage, totalPages, onPageChange }: {
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+}) {
+  const renderPageNumbers = () => {
+    if (totalPages <= 7) {
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    }
+
+    const pageNumbers: (number | string)[] = [];
+    const startPage = Math.max(2, currentPage - 2);
+    const endPage = Math.min(totalPages - 1, currentPage + 2);
+
+    pageNumbers.push(1);
+    if (startPage > 2) {
+      pageNumbers.push('...');
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pageNumbers.push(i);
+    }
+
+    if (endPage < totalPages - 1) {
+      pageNumbers.push('...');
+    }
+    pageNumbers.push(totalPages);
+
+    return pageNumbers;
+  };
+
+  if (totalPages <= 1) {
+    return null;
+  }
+
+  return (
+    <div className="mt-8 flex justify-center items-center gap-2 flex-wrap">
+      <button
+        onClick={() => onPageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+        className="px-3 py-1 bg-black/40 border border-white/30 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        Previous
+      </button>
+      {renderPageNumbers()?.map((page, index) =>
+        typeof page === 'number' ? (
+          <button
+            key={page}
+            onClick={() => onPageChange(page)}
+            className={`px-3 py-1 rounded ${currentPage === page ? 'bg-white/30' : 'bg-black/40'} border border-white/30`}
+          >
+            {page}
+          </button>
+        ) : (
+          <span key={`ellipsis-${index}`} className="px-3 py-1">...</span>
+        )
+      )}
+      <button
+        onClick={() => onPageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+        className="px-3 py-1 bg-black/40 border border-white/30 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        Next
+      </button>
+    </div>
+  );
 }
