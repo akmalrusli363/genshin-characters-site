@@ -1,18 +1,23 @@
 
 import Image from "next/image";
-import Element from "./data/elements";
+import { useElements } from "./element-context";
 
-export default function CharacterCard({ character, elements }: { character: any, elements: Element[] }) {
-  let weaponMapping = character.weaponText;
-  let weaponIconUrl = (weaponMapping === "Claymore") ? "/assets/Icon_Claymore.png" :
-    (weaponMapping === "Bow") ? "/assets/Icon_Bow.png" :
-      (weaponMapping === "Polearm") ? "/assets/Icon_Polearm.png" :
-        (weaponMapping === "Catalyst") ? "/assets/Icon_Catalyst.png" :
-          (weaponMapping === "Sword") ? "/assets/Icon_Sword.png" : "";
-  let elementMapping = character.elementText;
-  let elementIcon = elements.find(e => e.name === elementMapping)?.imageBase64 || "";
-  let avatarIcon = character.images.filename_icon || "";
-  let enkaAvatarIcon = "https://enka.network/ui/" + avatarIcon + ".png";
+export default function CharacterCard({ character }: { character: any }) {
+  const elements = useElements();
+
+  const weaponMapping = character.weaponText;
+  const elementMapping = character.elementText;
+  const elementIcon = elements.find(e => e.name === elementMapping)?.imageBase64 || "";
+  const avatarIcon = character.images.filename_icon || "";
+  let weaponIconUrl = ""
+  switch(weaponMapping) {
+    case "Sword": weaponIconUrl = "/assets/Icon_Sword.png";
+    case "Polearm": weaponIconUrl = "/assets/Icon_Polearm.png";
+    case "Claymore": weaponIconUrl = "/assets/Icon_Claymore.png";
+    case "Catalyst": weaponIconUrl = "/assets/Icon_Catalyst.png";
+    case "Bow": weaponIconUrl = "/assets/Icon_Bow.png";
+  }
+  const enkaAvatarIcon = "https://enka.network/ui/" + avatarIcon + ".png";
   return (
     <div className="w-[8rem] md:w-[12rem] h-[16rem] md:h-[20rem] bg-white/10 border border-white/20 rounded-xl p-2 sm:p-4 flex flex-col items-center backdrop-blur-sm">
       <div className="relative w-full h-[6rem] md:h-[12rem] mb-4">

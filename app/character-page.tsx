@@ -1,15 +1,14 @@
 'use client'
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, use } from "react";
 import { getUnique } from "./helpers";
 import CharacterTableView from "./character-table";
 import CharacterCard from "./character-card";
 import Character from "./data/character"
-import Element from './data/elements';
+import { useElements } from "./element-context";
 
-export default function CharacterListPage({ characters, elements }: {
-  characters: Character[],
-  elements: Element[]
+export default function CharacterListPage({ characters }: {
+  characters: Character[]
 }) {
   if (!characters) return <p className="center text-center text-2xl w-screen p-8 h-screen">No characters found</p>;
 
@@ -21,12 +20,12 @@ export default function CharacterListPage({ characters, elements }: {
           <div className="text-l">Fetched from <i><u>genshin-db-api.vercel.app</u></i></div>
         </header>
 
-        <CharacterCardCollection characters={characters} elements={elements} />
+        <CharacterCardCollection characters={characters} />
 
         <section className="ph-24">
           <h2 className="text-3xl font-bold text-center mt-8 mb-8">Character table</h2>
           <div className="mt-8 w-full lg:w-auto">
-            <CharacterTableView characters={characters} elements={elements} />
+            <CharacterTableView characters={characters} />
           </div>
         </section>
       </main>
@@ -37,10 +36,11 @@ export default function CharacterListPage({ characters, elements }: {
   );
 }
 
-function CharacterCardCollection({ characters, elements }: {
-  characters: Character[],
-  elements: Element[]
+function CharacterCardCollection({ characters }: {
+  characters: Character[]
 }) {
+  const elements = useElements();
+
   // State for filters
   const [region, setRegion] = useState("");
   const [element, setElement] = useState("");
@@ -132,7 +132,7 @@ function CharacterCardCollection({ characters, elements }: {
 
       <div ref={cardContainerRef} className="flex gap-6 flex-wrap justify-center flex-grow">
         {paginatedCharacters.map((character: any, idx: number) =>
-          <CharacterCard key={character.id || idx} character={character} elements={elements} />
+          <CharacterCard key={character.id || idx} character={character} />
         )}
       </div>
 

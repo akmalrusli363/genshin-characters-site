@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Image from "next/image";
+import { useElements } from "./element-context";
 import { buildPairFieldMappers, ImagePair, pivot } from "./helpers";
 import Character from "./data/character"
 import Element from "./data/elements";
@@ -45,10 +46,10 @@ function getCharactersByElementAndWeapon(characters: Character[], element: strin
   );
 }
 
-export default function CharacterTableView({ characters, elements }: {
-  characters: Character[],
-  elements: Element[]
+export default function CharacterTableView({ characters }: {
+  characters: Character[]
 }) {
+  const elements = useElements();
   const [tableColumnField, setTableColumnField] = useState("elementText");
   const [tableRowField, setTableRowField] = useState("weaponText");
 
@@ -92,15 +93,14 @@ export default function CharacterTableView({ characters, elements }: {
         </div>
       </div>
       <div className="w-[85vw] lg:w-auto overflow-x-auto">
-        <CharacterTable characters={characters} mappersForTable={mappers} rowSelector={tableRowField} colSelector={tableColumnField} elements={elements} />
+        <CharacterTable characters={characters} mappersForTable={mappers} rowSelector={tableRowField} colSelector={tableColumnField} />
       </div>
     </section>
   )
 }
 
-export function CharacterTable({ characters, elements, mappersForTable, rowSelector, colSelector }: {
+export function CharacterTable({ characters, mappersForTable, rowSelector, colSelector }: {
   characters: Character[],
-  elements: Element[],
   mappersForTable: { [key: string]: { label: string; values: ImagePair[] } },
   rowSelector: any, colSelector: any
 }) {
