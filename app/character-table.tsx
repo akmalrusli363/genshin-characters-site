@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import Image from "next/image";
 import { useElements } from "./element-context";
 import { buildPairFieldMappers, ImagePair, pivot } from "./helpers";
 import Character from "./data/character"
 import Element from "./data/elements";
+import { ShowRarityCardGlowContext } from "./ui/theme";
 
 const weaponImageMap: Record<string, string> = {
   "Sword": "/assets/Icon_Sword.png",
@@ -185,7 +186,11 @@ export function CharacterTable({ characters, mappersForTable, rowSelector, colSe
   );
 }
 
-function CharacterCardCell({ character }: { character: any }) {
+function CharacterCardCell({ character }: { character: Character }) {
+  const glowMode = useContext(ShowRarityCardGlowContext);
+  const fourStarGlowClass = 'drop-shadow-[0_0_0.5rem_theme(colors.purple.900)]';
+  const fiveStarGlowClass = 'drop-shadow-[0_0_0.5rem_theme(colors.amber.900)]';
+  const glowRarityClass = (glowMode && character.rarity === 4) ? fourStarGlowClass : (glowMode && character.rarity === 5) ? fiveStarGlowClass : '';
   let characterImageUrl = character?.images?.filename_iconCard ?? "";
   return (
     <div className="flex flex-col items-center w-16">
@@ -194,7 +199,7 @@ function CharacterCardCell({ character }: { character: any }) {
         alt={character ? character.name : "No Character"}
         width={64}
         height={64}
-        className="w-16 h-16"
+        className={`w-16 h-16 shadow-md ${glowRarityClass}`}
         style={{ objectFit: "contain" }}
         title={character ? character.name : "-"}
       />}

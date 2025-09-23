@@ -1,8 +1,11 @@
 
 import Image from "next/image";
 import { useElements } from "./element-context";
+import { useContext } from "react";
+import { ShowRarityCardGlowContext } from "./ui/theme";
+import Character from "./data/character";
 
-export default function CharacterCard({ character }: { character: any }) {
+export default function CharacterCard({ character }: { character: Character }) {
   const elements = useElements();
 
   const weaponMapping = character.weaponText;
@@ -18,8 +21,15 @@ export default function CharacterCard({ character }: { character: any }) {
     case "Bow": weaponIconUrl = "/assets/Icon_Bow.png";
   }
   const enkaAvatarIcon = "https://enka.network/ui/" + avatarIcon + ".png";
+
+  const glowRarity = useContext(ShowRarityCardGlowContext);
+  const fourStarGlowRarityClass = 'border-purple-300 bg-purple-300/20';
+  const fiveStarGlowRarityClass = 'border-amber-300 bg-amber-300/20';
+  const baseCardDecorationClass = 'bg-white/10 border-white/20';
+  const glowRarityClass = (glowRarity && character.rarity === 4) ? fourStarGlowRarityClass : (glowRarity && character.rarity === 5) ? fiveStarGlowRarityClass : baseCardDecorationClass;
+
   return (
-    <div className="w-[8rem] md:w-[12rem] h-[16rem] md:h-[20rem] bg-white/10 border border-white/20 rounded-xl p-2 sm:p-4 flex flex-col items-center backdrop-blur-sm">
+    <div className={`w-[8rem] md:w-[12rem] h-[16rem] md:h-[20rem] border ${glowRarityClass} rounded-xl p-2 sm:p-4 flex flex-col items-center backdrop-blur-sm transition-all duration-200 hover:bg-white/20 hover:scale-105`}>
       <div className="relative w-full h-[6rem] md:h-[12rem] mb-4">
         <Image
           src={enkaAvatarIcon}
@@ -30,7 +40,7 @@ export default function CharacterCard({ character }: { character: any }) {
           className="rounded-lg"
         />
       </div>
-      <h2 className="text-xl font-bold mb-2">{character.name}</h2>
+      <h2 className={"text-xl font-bold mb-2 text-center"}>{character.name}</h2>
       <div className="mb-2">
         <span className="text-sm mr-2">{character.region || "Outworld"}</span>
         <span className="text-sm">{character.rarity}★</span>

@@ -6,11 +6,14 @@ import CharacterTableView from "./character-table";
 import CharacterCard from "./character-card";
 import Character from "./data/character"
 import { useElements } from "./element-context";
+import { ShowRarityCardGlowContext } from "./ui/theme";
 
 export default function CharacterListPage({ characters }: {
   characters: Character[]
 }) {
   if (!characters) return <p className="center text-center text-2xl w-screen p-8 h-screen">No characters found</p>;
+
+  const [glowMode, setGlowMode] = useState(false);
 
   return (
     <div className="font-sans grid grid-rows-[1fr_auto] min-h-screen justify-items-center bg-gradient-to-b from-blue-900 via-black to-black text-white">
@@ -20,12 +23,34 @@ export default function CharacterListPage({ characters }: {
           <div className="text-l">Fetched from <i><u>genshin-db-api.vercel.app</u></i></div>
         </header>
 
-        <CharacterCardCollection characters={characters} />
+        <section className="flex justify-center mb-8 items-center">
+          <div>Glow mode: &nbsp;</div>
+          <div className="flex rounded-lg border border-white/30 overflow-hidden">
+            <button
+              onClick={() => setGlowMode(true)}
+              className={`px-4 py-2 transition-colors ${glowMode ? 'bg-white/20' : 'bg-black/40 hover:bg-white/10'}`}
+            >
+              On
+            </button>
+            <button
+              onClick={() => setGlowMode(false)}
+              className={`px-4 py-2 transition-colors ${!glowMode ? 'bg-white/20' : 'bg-black/40 hover:bg-white/10'}`}
+            >
+              Off
+            </button>
+          </div>
+        </section>
+
+        <ShowRarityCardGlowContext value={glowMode}>
+          <CharacterCardCollection characters={characters} />
+        </ShowRarityCardGlowContext>
 
         <section className="ph-24">
           <h2 className="text-3xl font-bold text-center mt-8 mb-8">Character table</h2>
           <div className="mt-8 w-full lg:w-auto">
-            <CharacterTableView characters={characters} />
+            <ShowRarityCardGlowContext value={glowMode}>
+              <CharacterTableView characters={characters} />
+            </ShowRarityCardGlowContext>
           </div>
         </section>
       </main>
@@ -45,6 +70,7 @@ function CharacterCardCollection({ characters }: {
   const [region, setRegion] = useState("");
   const [element, setElement] = useState("");
   const [weapon, setWeapon] = useState("");
+  const [rarity, setRarity] = useState(0);
   const [search, setSearch] = useState("");
   const [numToShow, setNumToShow] = useState(12);
   const [currentPage, setCurrentPage] = useState(1);
@@ -86,6 +112,7 @@ function CharacterCardCollection({ characters }: {
   const regions = getUnique(characters, "region") as string[];
   const uniqueElements = getUnique(characters, "elementText") as string[];
   const weapons = getUnique(characters, "weaponText") as string[];
+  const rarities = getUnique(characters, "rarity") as number[];
 
   // Filter characters based on selection
   const allFilteredCharacters = characters
@@ -94,6 +121,7 @@ function CharacterCardCollection({ characters }: {
       (!region || c.region === region) &&
       (!element || c.elementText === element) &&
       (!weapon || c.weaponText === weapon) &&
+      (!rarity || c.rarity === rarity) &&
       (!search || c.name.toLowerCase().includes(search.toLowerCase()))
     )
 
@@ -120,6 +148,10 @@ function CharacterCardCollection({ characters }: {
         <select value={weapon} onChange={e => setWeapon(e.target.value)} className="bg-black/40 border border-white/30 rounded px-2 py-1 flex-grow lg:flex-grow-0">
           <option value="">All Weapons</option>
           {weapons.map(w => <option key={w} value={w}>{w}</option>)}
+        </select>
+        <select value={rarity} onChange={e => setRarity(parseInt(e.target.value))} className="bg-black/40 border border-white/30 rounded px-2 py-1 flex-grow lg:flex-grow-0">
+          <option value="0">All ★</option>
+          {rarities.map(r => <option key={r} value={r}>{r}</option>)}
         </select>
         <input
           type="text"
