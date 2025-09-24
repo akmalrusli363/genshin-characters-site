@@ -13,6 +13,12 @@ const getAllParameters = new URLSearchParams({
   verboseCategories: "true"
 })
 
+const getParametersByQuery = (query: string) => new URLSearchParams({
+  query: query,
+  matchCategories: "true",
+  verboseCategories: "true"
+})
+
 export const getAllCharacters = async () =>
     fetchWithEtag<Character[]>(`${baseUrl + charactersUrl}?${getAllParameters}`)
 
@@ -20,3 +26,8 @@ export const getAllElements = async () => {
     const response = await fetchWithEtag<ElementResponse[]>(`${baseUrl + elementsUrl}?${getAllParameters}`)
     return response.map(mapElementResponseToElement)
 }
+
+export const getCharacterByName = async (name: string) =>
+    fetchWithEtag<Character>(`${baseUrl + charactersUrl}?${getParametersByQuery(name)}`)
+
+

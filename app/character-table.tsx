@@ -5,6 +5,8 @@ import { buildPairFieldMappers, ImagePair, pivot } from "@/app/helpers";
 import Character from "@/app/data/character"
 import Element from "@/app/data/elements";
 import { ShowRarityCardGlowContext } from "@/app/ui/theme";
+import Link from "next/link";
+import { normalizeSlug } from "./utils/slugify";
 
 const weaponImageMap: Record<string, string> = {
   "Sword": "/assets/Icon_Sword.png",
@@ -197,7 +199,7 @@ function CharacterCardCell({ character }: { character: Character }) {
   const glowRarityClass = (glowMode && character.rarity === 4) ? fourStarGlowClass : (glowMode && character.rarity === 5) ? fiveStarGlowClass : '';
   let characterImageUrl = character?.images?.filename_iconCard ?? "";
   return (
-    <div className="flex flex-col items-center w-16">
+    <Link href={`${normalizeSlug(character.name.toLowerCase())}`} className="flex flex-col items-center w-16">
       {characterImageUrl && <Image
         src={characterImageUrl ? `https://enka.network/ui/${characterImageUrl}.png` : "/assets/placeholder.png"}
         alt={character ? character.name : "No Character"}
@@ -210,7 +212,7 @@ function CharacterCardCell({ character }: { character: Character }) {
       <p className="text-xs text-center mt-1">
         {character ? character.name : "-"}
       </p>
-    </div>
+    </Link>
   );
 }
 

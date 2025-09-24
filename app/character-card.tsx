@@ -1,9 +1,11 @@
 
 import Image from "next/image";
-import { useElements } from "./element-context";
+import { useElements } from "@/app/element-context";
 import { useContext } from "react";
-import { ShowRarityCardGlowContext } from "./ui/theme";
-import Character from "./data/character";
+import { ShowRarityCardGlowContext } from "@/app/ui/theme";
+import Character from "@/app/data/character";
+import Link from "next/link";
+import { normalizeSlug } from "./utils/slugify";
 
 export default function CharacterCard({ character }: { character: Character }) {
   const elements = useElements();
@@ -29,7 +31,7 @@ export default function CharacterCard({ character }: { character: Character }) {
   const glowRarityClass = (glowRarity && character.rarity === 4) ? fourStarGlowRarityClass : (glowRarity && character.rarity === 5) ? fiveStarGlowRarityClass : baseCardDecorationClass;
 
   return (
-    <div className={`w-[8rem] md:w-[12rem] h-[16rem] md:h-[20rem] border ${glowRarityClass} rounded-xl p-2 sm:p-4 flex flex-col items-center backdrop-blur-sm transition-all duration-200 hover:bg-white/20 hover:scale-105`}>
+    <Link href={`/${normalizeSlug(character.name.toLowerCase())}`} className={`w-[8rem] md:w-[12rem] h-[16rem] md:h-[20rem] border ${glowRarityClass} rounded-xl p-2 sm:p-4 flex flex-col items-center backdrop-blur-sm transition-all duration-200 hover:bg-white/20 hover:scale-105`}>
       <div className="relative w-full h-[6rem] md:h-[12rem] mb-4">
         <Image
           src={enkaAvatarIcon}
@@ -50,6 +52,6 @@ export default function CharacterCard({ character }: { character: Character }) {
         {weaponIconUrl && <img src={weaponIconUrl} alt={character.weaponText} className="inline-block w-8 h-8" />}
       </div>
       <p className="text-xs sm:text-sm text-center">{character.elementText} - {character.weaponText}</p>
-    </div>
+    </Link>
   );
 }
