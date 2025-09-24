@@ -1,12 +1,12 @@
 'use client'
 
-import { useState, useEffect, useRef, use } from "react";
-import { getUnique } from "./helpers";
-import CharacterTableView from "./character-table";
-import CharacterCard from "./character-card";
-import Character from "./data/character"
-import { useElements } from "./element-context";
-import { ShowRarityCardGlowContext } from "./ui/theme";
+import { useState, useEffect, useRef, use, useMemo } from "react";
+import { getUnique } from "@/app/helpers";
+import CharacterTableView from "@/app/character-table";
+import CharacterCard from "@/app/character-card";
+import Character from "@/app/data/character"
+import { useElements } from "@/app/element-context";
+import { ShowRarityCardGlowContext } from "@/app/ui/theme";
 
 export default function CharacterListPage({ characters }: {
   characters: Character[]
@@ -109,13 +109,14 @@ function CharacterCardCollection({ characters }: {
   }, [region, element, weapon, search]);
 
   // Get unique options
-  const regions = getUnique(characters, "region") as string[];
-  const uniqueElements = getUnique(characters, "elementText") as string[];
-  const weapons = getUnique(characters, "weaponText") as string[];
-  const rarities = getUnique(characters, "rarity") as number[];
+  const regions = useMemo(() => getUnique(characters, "region"), [characters]);
+  const uniqueElements = useMemo(() => getUnique(characters, "elementText"), [characters]);
+  const weapons = useMemo(() => getUnique(characters, "weaponText"), [characters]);
+  const rarities = useMemo(() => getUnique(characters, "rarity"), [characters]);
 
   // Filter characters based on selection
-  const allFilteredCharacters = characters
+  const allFilteredCharacters = useMemo(() => {
+    return characters
     .filter(c => c.name)
     .filter(c =>
       (!region || c.region === region) &&
@@ -124,6 +125,7 @@ function CharacterCardCollection({ characters }: {
       (!rarity || c.rarity === rarity) &&
       (!search || c.name.toLowerCase().includes(search.toLowerCase()))
     )
+  }, [characters, region, element, weapon, rarity, search]);
 
   const totalPages = Math.ceil(allFilteredCharacters.length / numToShow) || 1;
   const paginatedCharacters = allFilteredCharacters.slice((currentPage - 1) * numToShow, currentPage * numToShow);

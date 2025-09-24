@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, ReactNode, useContext } from "react";
-import Element from "./data/elements";
+import Element from "@/app/data/elements";
 
 export const ElementalContext = createContext<Element[] | undefined>(undefined);
 

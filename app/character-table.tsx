@@ -1,10 +1,10 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import Image from "next/image";
-import { useElements } from "./element-context";
-import { buildPairFieldMappers, ImagePair, pivot } from "./helpers";
-import Character from "./data/character"
-import Element from "./data/elements";
-import { ShowRarityCardGlowContext } from "./ui/theme";
+import { useElements } from "@/app/element-context";
+import { buildPairFieldMappers, ImagePair, pivot } from "@/app/helpers";
+import Character from "@/app/data/character"
+import Element from "@/app/data/elements";
+import { ShowRarityCardGlowContext } from "@/app/ui/theme";
 
 const weaponImageMap: Record<string, string> = {
   "Sword": "/assets/Icon_Sword.png",
@@ -20,26 +20,28 @@ const config: (elements: Element[]) => {
     label: string;
     mapping: (item: Character) => ImagePair;
   };
-} = (elements: Element[]) => {return {
-  weaponText: {
-    field: "weaponText", label: "Weapons", mapping: (c: Character) => ({
-      name: c.weaponText,
-      imgSrc: weaponImageMap[c.weaponText] || ""
-    })
-  },
-  elementText: {
-    field: "elementText", label: "Elements", mapping: (c: Character) => ({
-      name: c.elementText,
-      imgSrc: elements.find(e => e.name === c.elementText)?.imageBase64 || ""
-    })
-  },
-  region: {
-    field: "region", label: "Regions", mapping: (c: Character) => ({
-      name: c.region,
-      imgSrc: "" // No region images available in data
-    })
+} = (elements: Element[]) => {
+  return {
+    weaponText: {
+      field: "weaponText", label: "Weapons", mapping: (c: Character) => ({
+        name: c.weaponText,
+        imgSrc: weaponImageMap[c.weaponText] || ""
+      })
+    },
+    elementText: {
+      field: "elementText", label: "Elements", mapping: (c: Character) => ({
+        name: c.elementText,
+        imgSrc: elements.find(e => e.name === c.elementText)?.imageBase64 || ""
+      })
+    },
+    region: {
+      field: "region", label: "Regions", mapping: (c: Character) => ({
+        name: c.region,
+        imgSrc: "" // No region images available in data
+      })
+    }
   }
-}};
+};
 
 function getCharactersByElementAndWeapon(characters: Character[], element: string, weapon: string) {
   return characters.filter(
@@ -60,13 +62,15 @@ export default function CharacterTableView({ characters }: {
     setTableRowField(temp);
   };
 
-  const mappers = buildPairFieldMappers(characters, config(elements));
+  const mappers = useMemo(() => {
+    return buildPairFieldMappers(characters, config(elements))
+  }, [characters, elements]);
   const minMdWidth = 768;
 
   return (
     <section className="items-center justify-items-center lg:mx-16">
       <div className="flex items-center gap-2 md:hidden mb-4">
-          Column <SwapIcon /> Row
+        Column <SwapIcon /> Row
       </div>
       <div className="flex items-center gap-x-2 md:gap-x-8 gap-y-4 flex-wrap mb-4 justify-center">
         <div className="flex items-center gap-2">
@@ -199,7 +203,7 @@ function CharacterCardCell({ character }: { character: Character }) {
         alt={character ? character.name : "No Character"}
         width={64}
         height={64}
-        className={`w-16 h-16 shadow-md ${glowRarityClass}`}
+        className={`w-16 h-16 shadow-md hover:scale-110 transition-all ${glowRarityClass}`}
         style={{ objectFit: "contain" }}
         title={character ? character.name : "-"}
       />}
