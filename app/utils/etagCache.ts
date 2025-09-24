@@ -28,12 +28,23 @@ export async function fetchWithEtag<T>(url: string | URL): Promise<T> {
     }
   }
 
-  const res = await fetch(url, { headers });
+  let res: Response;
+  try {
+    res = await fetch(url, { headers });
+  } catch (error) {
+    console.error(`[Fetch] Network error for ${urlString}:`, error);
+    // Re-throw the error so the caller can handle it, e.g., by showing an error page.
+    throw new Error(`Failed to fetch data for ${urlString}. Please check your network connection.`);
+  }
 
   // 2. If the server returns 304, it means our cache is still valid.
   if (res.status === 304) {
     console.log(`[Cache] Hit for ${urlString}`);
     return cachedEntry!.data; // Safe due to 304 response logic
+  }
+  
+  if (!res.ok) {
+    throw new Error(`[Fetch] Failed to fetch ${urlString}, received status: ${res.status}`);
   }
 
   // 3. If we get a new response, parse it and update the cache.
