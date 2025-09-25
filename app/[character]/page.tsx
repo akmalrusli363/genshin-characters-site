@@ -1,8 +1,9 @@
-import { getAllCharacters, getAllElements, getCharacterByName } from "@/app/api/constants";
+import { getAllElements, getCharacterByName, getTalentsByCharacterName } from "@/app/api/constants";
 import { ElementalProvider } from "@/app/element-context";
 import CharacterDetailPage from "@/app/[character]/character-detail-page";
 import { fromSlug, normalizeSlug } from "@/app/utils/slugify";
 import { redirect } from "next/navigation";
+import CharacterTalents from "./character-talents";
 import FloatingBackButton from "@/app/ui/floating-back-button";
 
 export async function generateMetadata({ params }: { params: Promise<{ character: string }> }) {
@@ -26,13 +27,18 @@ export default async function Page(
 
   const characterName = fromSlug(canonCharacterName);
 
-  const [characterData, elementData] = await Promise.all([
+  const [characterData, elementData, talentData] = await Promise.all([
     getCharacterByName(characterName),
-    getAllElements()
+    getAllElements(),
+    getTalentsByCharacterName(characterName),
   ])
   return (
-    <ElementalProvider elements={elementData}>
-      <CharacterDetailPage character={characterData} />
-    </ElementalProvider>
+    <>
+      <FloatingBackButton backToHome={true} />
+      <ElementalProvider elements={elementData}>
+        <CharacterDetailPage character={characterData} />
+        {talentData && !Array.isArray(talentData) && <CharacterTalents talents={talentData} />}
+      </ElementalProvider>
+    </>
   );
 }
