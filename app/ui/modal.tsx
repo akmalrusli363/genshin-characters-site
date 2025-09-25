@@ -33,19 +33,9 @@ export function Modal({
         <div className="p-6 overflow-y-auto">
           {children}
         </div>
-        <button onClick={onDismiss} className="absolute top-2 right-2 p-1 rounded-full hover:bg-white/20 transition-colors" aria-label="Close modal">
+        <button onClick={onDismiss} className="absolute top-2 right-2 px-4 py-2 text-2xl rounded-full hover:bg-white/20 transition-colors" aria-label="Close modal">
           &#x2715;
         </button>
-        {href && (
-          <div className="border-t border-white/20 p-4 flex justify-end">
-            <a
-              href={href}
-              className="px-4 py-2 text-sm bg-white/10 rounded-md hover:bg-white/20 transition-colors"
-            >
-              Go to page
-            </a>
-          </div>
-        )}
       </div>
     </dialog>
   );

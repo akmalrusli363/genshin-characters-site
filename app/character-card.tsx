@@ -6,6 +6,7 @@ import { ShowRarityCardGlowContext } from "@/app/ui/theme";
 import Character from "@/app/data/character";
 import Link from "next/link";
 import { normalizeSlug } from "./utils/slugify";
+import { getUiIconPath } from "./api/constants";
 
 export default function CharacterCard({ character }: { character: Character }) {
   const elements = useElements();
@@ -22,7 +23,7 @@ export default function CharacterCard({ character }: { character: Character }) {
     case "Catalyst": weaponIconUrl = "/assets/Icon_Catalyst.png";
     case "Bow": weaponIconUrl = "/assets/Icon_Bow.png";
   }
-  const enkaAvatarIcon = "https://enka.network/ui/" + avatarIcon + ".png";
+  const enkaAvatarIcon = getUiIconPath(avatarIcon);
 
   const glowRarity = useContext(ShowRarityCardGlowContext);
   const fourStarGlowRarityClass = 'border-purple-300 bg-purple-300/20';

@@ -7,6 +7,7 @@ import Element from "@/app/data/elements";
 import { ShowRarityCardGlowContext } from "@/app/ui/theme";
 import Link from "next/link";
 import { normalizeSlug } from "./utils/slugify";
+import { getUiIconPath } from "./api/constants";
 
 const weaponImageMap: Record<string, string> = {
   "Sword": "/assets/Icon_Sword.png",
@@ -201,7 +202,7 @@ function CharacterCardCell({ character }: { character: Character }) {
   return (
     <Link href={`${normalizeSlug(character.name.toLowerCase())}`} className="flex flex-col items-center w-16">
       {characterImageUrl && <Image
-        src={characterImageUrl ? `https://enka.network/ui/${characterImageUrl}.png` : "/assets/placeholder.png"}
+        src={characterImageUrl ? getUiIconPath(characterImageUrl) : "/assets/placeholder.png"}
         alt={character ? character.name : "No Character"}
         width={64}
         height={64}

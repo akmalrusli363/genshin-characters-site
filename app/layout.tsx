@@ -13,7 +13,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Genshin Character Card",
+  title: {
+    default: "Genshin Character Card",
+    template: "%s | Genshin Character Card",
+  },
   description: "List, search, or get info about Genshin Impact characters",
 };
 

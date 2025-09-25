@@ -20,7 +20,7 @@ export interface Costs {
   ascend6: CostItem[];
 }
 
-export interface Images {
+export interface AvatarImages {
   image: string;
   card: string;
   portrait: string;
@@ -28,6 +28,8 @@ export interface Images {
   filename_icon: string;
   filename_iconCard: string;
   filename_sideIcon: string;
+  filename_gachaSplash: string;
+  filename_gachaSlice: string;
   mihoyo_icon: string;
   mihoyo_sideIcon: string;
 }
@@ -59,7 +61,7 @@ export default interface Character {
   constellation: string;
   cv: CV;
   costs: Costs;
-  images: Images;
+  images: AvatarImages;
   url: Url;
   version: string;
 }
