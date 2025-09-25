@@ -39,6 +39,7 @@ export default async function CharacterDetailModal(
         <div className="p-4 flex justify-center gap-4">
           <Link
             href={`${baseWikiaUrl}${characterData.name.replace(/ /g, "_")}`}
+            target="_blank"
             className="px-4 py-2 text-md bg-white/10 rounded-md hover:bg-white/20 transition-colors"
           >
             Wiki

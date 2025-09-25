@@ -39,7 +39,7 @@ export const getCharacterByName = cache(async (name: string) =>
     fetchWithEtag<Character>(`${baseUrl + charactersUrl}?${getParametersByQuery(name)}`))
 
 export const getConstellationsByCharaName = async (name: string) =>
-    fetchWithEtag<any>(`${baseUrl + charactersUrl}?${getParametersByQuery(name)}`)
+    fetchWithEtag<any>(`${baseUrl + constellationsUrl}?${getParametersByQuery(name)}`)
 
 export const getTalentsByCharacterName = async (name: string) =>
     fetchWithEtag<Talents|null>(`${baseUrl + talentsUrl}?${getParametersByQuery(name)}`)
