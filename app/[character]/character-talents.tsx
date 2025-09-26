@@ -13,19 +13,19 @@ export default function CharacterTalents({ talents }: { talents: Talents }) {
   }
 
   return (
-    <div className={`flex flex-col lg:flex-row items-center lg:items-start gap-8 p-8 bg-black/40 rounded-xl border border-white/20 backdrop-blur-sm max-w-4xl mx-auto my-8`}>
+    <div className={`flex flex-col lg:flex-row items-center lg:items-start gap-8 p-4 md:p-8 bg-black/40 rounded-xl border border-white/20 backdrop-blur-sm max-w-4xl mx-auto my-8`}>
       <div className="flex flex-col gap-4 text-center lg:text-left">
         <h2 className={"text-4xl font-bold"}>Talents</h2>
 
         <div className="flex flex-col lg:justify-start gap-4">
-          <span className="text-xl">Combats</span>
+          <span className="text-xl underline lg:no-underline underline-offset-8">Combats</span>
           <TalentCard talent={talents.combat1} imagePath={talents.images.filename_combat1} />
           <TalentCard talent={talents.combat2} imagePath={talents.images.filename_combat2} />
           <TalentCard talent={talents.combat3} imagePath={talents.images.filename_combat3} />
-          <span className="text-xl">Ascension Passives (Extra Talents)</span>
+          <span className="text-xl underline lg:no-underline underline-offset-8">Ascension Passives (Extra Talents)</span>
           <TalentCard talent={talents.passive1} imagePath={talents.images.filename_passive1} />
           <TalentCard talent={talents.passive2} imagePath={talents.images.filename_passive2} />
-          <span className="text-xl">Utility Passives</span>
+          <span className="text-xl underline lg:no-underline underline-offset-8">Utility Passives</span>
           {talents.passive3 &&
             <TalentCard talent={talents.passive3} imagePath={talents.images.filename_passive3} />}
           {talents.passive4 &&

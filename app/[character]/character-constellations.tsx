@@ -12,9 +12,9 @@ export default function CharacterConstellations({ constellations, constellationN
   }
 
   return (
-    <div className={`flex flex-col lg:flex-row items-center lg:items-start gap-8 p-8 bg-black/40 rounded-xl border border-white/20 backdrop-blur-sm max-w-4xl mx-auto my-8`}>
+    <div className={`flex flex-col lg:flex-row items-center lg:items-start gap-8 p-4 md:p-8 bg-black/40 rounded-xl border border-white/20 backdrop-blur-sm max-w-4xl mx-auto my-8`}>
       <div className="flex flex-col gap-4 text-center lg:text-left">
-        <h2 className={"text-4xl font-bold"}>Constellations {constellationName && <i>({constellationName})</i>}</h2>
+        <h2 className={"text-2xl md:text-4xl font-bold"}>Constellations {constellationName && <i>({constellationName})</i>}</h2>
 
         <div className="flex flex-col lg:justify-start gap-4">
           <ConstellationCard constellation={constellations.c1} />
@@ -33,7 +33,7 @@ function ConstellationCard({ constellation }: { constellation: ConstellationDeta
   return (
     <div className="flex flex-row gap-4">
       <div className="w-4rem justify-center content-center self-center gap-2">
-        <p className="text-2xl font-semibold text-center">{constellation.level}</p>
+        <p className="text-xl md:text-2xl font-semibold text-center">{constellation.level}</p>
       </div>
       <div className="flex flex-1/9 grow-0 flex-col shrink-0 break-words break-all justify-center gap-2">
         {constellation.imagePath && <Image
