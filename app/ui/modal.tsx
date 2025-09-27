@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 
 export function Modal({
   children,
-  href,
 }: { children: React.ReactNode; href?: string }) {
   const router = useRouter();
   const dialogRef = useRef<ComponentRef<'dialog'>>(null);

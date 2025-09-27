@@ -47,13 +47,13 @@ export default async function Page(
       <FloatingBackButton backToHome={true} />
       <ElementalProvider elements={elementData}>
         <CharacterDetailPage character={characterData} />
-        <Suspense fallback={<p className="text-center p-4rem">Loading {characterData.name}'s stat...</p>}>
+        <Suspense fallback={<p className="text-center p-4rem">Loading {characterData.name}&apos;s stat...</p>}>
           <CharacterStatSection characterName={characterName} characterData={characterData}/>
         </Suspense>
-        <Suspense fallback={<p className="text-center p-4rem">Loading {characterData.name}'s talents...</p>}>
+        <Suspense fallback={<p className="text-center p-4rem">Loading {characterData.name}&apos;s talents...</p>}>
           <CharacterTalentSection characterName={characterName}/>
         </Suspense>
-        <Suspense fallback={<p className="text-center p-4rem">Loading {characterData.name}'s constellations...</p>}>
+        <Suspense fallback={<p className="text-center p-4rem">Loading {characterData.name}&apos;s constellations...</p>}>
           <CharacterConstellationSection characterName={characterName} characterData={characterData}/>
         </Suspense>
       </ElementalProvider>

@@ -1,7 +1,7 @@
 
 import Image from "next/image";
 import { useElements } from "@/app/element-context";
-import { useCallback, useContext, useMemo } from "react";
+import { useContext, useMemo } from "react";
 import { ShowRarityCardGlowContext } from "@/app/ui/theme";
 import Character from "@/app/data/character";
 import Link from "next/link";
@@ -49,8 +49,8 @@ export default function CharacterCard({ character }: { character: Character }) {
         <span className="text-sm">{character.rarity}★</span>
       </div>
       <div className="mb-2">
-        {elementIcon && <img src={elementIcon} title={character.elementText} alt={character.elementText} className="inline-block w-6 h-6 mr-2" />}
-        {weaponIconUrl && <img src={weaponIconUrl} title={character.weaponText} alt={character.weaponText} className="inline-block w-8 h-8" />}
+        {elementIcon && <Image src={elementIcon} title={character.elementText} alt={character.elementText} className="inline-block w-6 h-6 mr-2" />}
+        {weaponIconUrl && <Image src={weaponIconUrl} title={character.weaponText} alt={character.weaponText} className="inline-block w-8 h-8" />}
       </div>
       <p className="text-xs sm:text-sm text-center">{character.elementText} - {character.weaponText}</p>
     </Link>

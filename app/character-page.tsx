@@ -1,19 +1,18 @@
 'use client'
 
-import { useState, useEffect, useRef, use, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { getUnique } from "@/app/helpers";
 import CharacterTableView from "@/app/character-table";
 import CharacterCard from "@/app/character-card";
 import Character from "@/app/data/character"
-import { useElements } from "@/app/element-context";
 import { ShowRarityCardGlowContext } from "@/app/ui/theme";
 
 export default function CharacterListPage({ characters }: {
-  characters: Character[]
+  characters: Character[] | undefined
 }) {
-  if (!characters) return <p className="center text-center text-2xl w-screen p-8 h-screen">No characters found</p>;
-
   const [glowMode, setGlowMode] = useState(false);
+  
+  if (!characters) return <p className="center text-center text-2xl w-screen p-8 h-screen">No characters found</p>;
 
   return (
     <div className="font-sans grid grid-rows-[1fr_auto] min-h-screen justify-items-center bg-gradient-to-b from-blue-900 via-black to-black text-white">
@@ -64,8 +63,6 @@ export default function CharacterListPage({ characters }: {
 function CharacterCardCollection({ characters }: {
   characters: Character[]
 }) {
-  const elements = useElements();
-
   // State for filters
   const [region, setRegion] = useState("");
   const [element, setElement] = useState("");
@@ -141,19 +138,19 @@ function CharacterCardCollection({ characters }: {
       <div className="flex flex-wrap gap-4 mb-8">
         <select value={region} onChange={e => setRegion(e.target.value)} className="bg-black/40 border border-white/30 rounded px-2 py-1 flex-grow lg:flex-grow-0">
           <option value="">All Regions</option>
-          {regions.map(r => <option key={r} value={r}>{r}</option>)}
+          {regions.map(r => <option key={String(r)} value={String(r)}>{String(r)}</option>)}
         </select>
         <select value={element} onChange={e => setElement(e.target.value)} className="bg-black/40 border border-white/30 rounded px-2 py-1 flex-grow lg:flex-grow-0">
           <option value="">All Elements</option>
-          {uniqueElements.map(e => <option key={e} value={e}>{e}</option>)}
+          {uniqueElements.map(e => <option key={String(e)} value={String(e)}>{String(e)}</option>)}
         </select>
         <select value={weapon} onChange={e => setWeapon(e.target.value)} className="bg-black/40 border border-white/30 rounded px-2 py-1 flex-grow lg:flex-grow-0">
           <option value="">All Weapons</option>
-          {weapons.map(w => <option key={w} value={w}>{w}</option>)}
+          {weapons.map(w => <option key={String(w)} value={String(w)}>{String(w)}</option>)}
         </select>
         <select value={rarity} onChange={e => setRarity(parseInt(e.target.value))} className="bg-black/40 border border-white/30 rounded px-2 py-1 flex-grow lg:flex-grow-0">
           <option value="0">All ★</option>
-          {rarities.map(r => <option key={r} value={r}>{r}</option>)}
+          {rarities.map(r => <option key={String(r)} value={String(r)}>{String(r)}</option>)}
         </select>
         <input
           type="text"
@@ -165,7 +162,7 @@ function CharacterCardCollection({ characters }: {
       </div>
 
       <div ref={cardContainerRef} className="flex gap-6 flex-wrap justify-center flex-grow">
-        {paginatedCharacters.map((character: any, idx: number) =>
+        {paginatedCharacters.map((character: Character, idx: number) =>
           <CharacterCard key={character.id || idx} character={character} />
         )}
       </div>

@@ -1,6 +1,6 @@
 
 // Helper to get unique values for dropdowns
-export function getUnique(arr: any[], key: string) {
+export function getUnique<T>(arr: T[], key: keyof T) {
   return Array.from(new Set(arr.map(item => item[key]).filter(Boolean)));
 }
 
@@ -28,17 +28,17 @@ export interface ImagePair {
   imgSrc: string;
 }
 
-interface FieldMapper<T> {
-  field: keyof T;       // the property name from your object
-  label: string;        // user-friendly label
-  values: string[];     // filtered list of distinct values
-}
+// interface FieldMapper<T> {
+//   field: keyof T;       // the property name from your object
+//   label: string;        // user-friendly label
+//   values: string[];     // filtered list of distinct values
+// }
 
-interface PairFieldMapper<T> {
-  field: keyof T;       // the property name from your object
-  label: string;        // user-friendly label
-  values: ImagePair[];     // filtered list of distinct values
-}
+// interface PairFieldMapper<T> {
+//   field: keyof T;       // the property name from your object
+//   label: string;        // user-friendly label
+//   values: ImagePair[];     // filtered list of distinct values
+// }
 
 // export function createFieldMapper<T extends Record<string, any>>(
 //   data: T[],
@@ -57,7 +57,7 @@ interface PairFieldMapper<T> {
 //   return { field, label, values };
 // }
 
-export function buildFieldMappers<T extends Record<string, any>>(
+export function buildFieldMappers<T extends Record<string, T>>(
   data: T[],
   config: { [key: string]: { field: keyof T; label: string } },
   exclude: string[] = ["none"]
@@ -81,7 +81,7 @@ export function buildFieldMappers<T extends Record<string, any>>(
   return result;
 }
 
-export function buildPairFieldMappers<T extends Record<string, any>>(
+export function buildPairFieldMappers<T extends object>(
   data: T[],
   config: {
      [key: string]: {
@@ -91,7 +91,7 @@ export function buildPairFieldMappers<T extends Record<string, any>>(
       };
     },
   exclude: string[] = ["none"]
-) {
+): Record<string, { label: string; values: ImagePair[] }> {
   const result: Record<string, { label: string; values: ImagePair[] }> = {};
 
   for (const key in config) {

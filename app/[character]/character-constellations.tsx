@@ -1,7 +1,5 @@
 'use client';
 
-import { useElements } from "@/app/element-context";
-import Talents, { CombatData } from "../data/talents";
 import { getUiIconPath } from "../api/constants";
 import Image from "next/image";
 import Constellations, { ConstellationDetail } from "../data/constellations";

@@ -46,11 +46,11 @@ const config: (elements: Element[]) => {
   }
 };
 
-function getCharactersByElementAndWeapon(characters: Character[], element: string, weapon: string) {
-  return characters.filter(
-    (char) => char.elementText === element && char.weaponText === weapon
-  );
-}
+// function getCharactersByElementAndWeapon(characters: Character[], element: string, weapon: string) {
+//   return characters.filter(
+//     (char) => char.elementText === element && char.weaponText === weapon
+//   );
+// }
 
 export default function CharacterTableView({ characters }: {
   characters: Character[]
@@ -68,7 +68,6 @@ export default function CharacterTableView({ characters }: {
   const mappers = useMemo(() => {
     return buildPairFieldMappers(characters, config(elements))
   }, [characters, elements]);
-  const minMdWidth = 768;
 
   return (
     <section className="items-center justify-items-center lg:mx-16">
@@ -110,12 +109,12 @@ export default function CharacterTableView({ characters }: {
 export function CharacterTable({ characters, mappersForTable, rowSelector, colSelector }: {
   characters: Character[],
   mappersForTable: { [key: string]: { label: string; values: ImagePair[] } },
-  rowSelector: any, colSelector: any
+  rowSelector: string, colSelector: string
 }) {
-  const characterList = pivot<Character>(characters, rowSelector, colSelector);
+  const characterList = pivot<Character>(characters, rowSelector as keyof Character, colSelector as keyof Character);
   const colSelectorMapper = mappersForTable[colSelector];
   const rowSelectorMapper = mappersForTable[rowSelector];
-  let tableHeader = (weapon: string) => {
+  const tableHeader = (weapon: string) => {
     const img = colSelectorMapper.values.find(e => e.name === weapon)?.imgSrc
     return (
       <th key={weapon} style={{
@@ -129,7 +128,7 @@ export function CharacterTable({ characters, mappersForTable, rowSelector, colSe
       </th>
     )
   };
-  let tableCell = (row: string, col: string) => {
+  const tableCell = (row: string, col: string) => {
     const charas = characterList[row][col];
     return (
       <td key={col} style={{
@@ -152,7 +151,7 @@ export function CharacterTable({ characters, mappersForTable, rowSelector, colSe
       </td>
     );
   };
-  let tableRowLead = (element: string) => {
+  const tableRowLead = (element: string) => {
     const img = rowSelectorMapper.values.find(e => e.name === element)?.imgSrc
     return (
       <td style={{
@@ -198,7 +197,7 @@ function CharacterCardCell({ character }: { character: Character }) {
   const fourStarGlowClass = 'drop-shadow-[0_0_0.5rem_theme(colors.purple.900)]';
   const fiveStarGlowClass = 'drop-shadow-[0_0_0.5rem_theme(colors.amber.900)]';
   const glowRarityClass = (glowMode && character.rarity === 4) ? fourStarGlowClass : (glowMode && character.rarity === 5) ? fiveStarGlowClass : '';
-  let characterImageUrl = character?.images?.filename_iconCard ?? "";
+  const characterImageUrl = character?.images?.filename_iconCard ?? "";
   return (
     <Link href={`${normalizeSlug(character.name.toLowerCase())}`} className="flex flex-col items-center w-16">
       {characterImageUrl && <Image

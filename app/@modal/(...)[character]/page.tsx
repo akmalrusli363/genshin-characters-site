@@ -2,13 +2,16 @@ import { baseWikiaUrl, getAllElements, getCharacterByName } from "@/app/api/cons
 import { ElementalProvider } from "@/app/element-context";
 import CharacterDetailPage from "@/app/[character]/character-detail-page";
 import { fromSlug, normalizeSlug } from "@/app/utils/slugify";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Modal } from "@/app/ui/modal";
 import Link from "next/link";
 
 export async function generateMetadata({ params }: { params: Promise<{ character: string }> }) {
   const { character } = await params;
   const characterData = await getCharacterByName(character);
+  if (!characterData) {
+    return notFound();
+  }
   return {
     title: characterData.name,
     description: `${characterData.elementText} ${characterData.weaponText} from ${characterData.region}`,
@@ -30,7 +33,11 @@ export default async function CharacterDetailModal(
   const [characterData, elementData] = await Promise.all([
     getCharacterByName(characterName),
     getAllElements()
-  ])
+  ]);
+  
+  if (!characterData || !elementData) {
+    return notFound();
+  }
   return (
     <Modal>
       {/* <p>Page of {characterName}</p> */}

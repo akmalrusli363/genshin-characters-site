@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import CharacterStat from "../data/chara-stat";
 import Character, { CostItem } from "../data/character";
 import { mapCharacterCombatScalingData } from "../data/mapper";
@@ -8,7 +8,7 @@ import { getUiItemIconPath } from "../api/constants";
 import Image from "next/image";
 
 function useLevelBreakpoints(selectableLevels: number[]): Record<number, {label: string, index: number}> {
-  let record: Record<number, {label: string, index: number}> = {}
+  const record: Record<number, {label: string, index: number}> = {};
   selectableLevels.forEach((level, index) => {
     const label = (index > 0 && selectableLevels.length - 1 > index) ? "Ascension " + index : (index > 0) ? "Max Level" : "Base";
     record[level] = {label: label, index: index};
@@ -17,10 +17,6 @@ function useLevelBreakpoints(selectableLevels: number[]): Record<number, {label:
 }
 
 export default function CharacterStatCard({ character, characterStat }: { character: Character, characterStat: Record<string, CharacterStat> }) {
-  if (!characterStat) {
-    return null;
-  }
-
   const selectableLevels = [1, 20, 40, 50, 60, 70, 80, 90];
   const levelBreakpoints = useLevelBreakpoints(selectableLevels);
   const [selectedLevel, setSelectedLevel] = useState(selectableLevels[0]);
@@ -30,7 +26,7 @@ export default function CharacterStatCard({ character, characterStat }: { charac
 
   const specialtyLabel = useMemo(() => {
     return mapCharacterCombatScalingData(character.substatType)
-  }, [characterStat, character]);
+  }, [character]);
   
   const stat = useMemo(() => {
     return characterStat[selectedLevel.toString() + '+'] || characterStat[selectedLevel.toString()]
@@ -41,10 +37,14 @@ export default function CharacterStatCard({ character, characterStat }: { charac
     } else {
       return (stat.specialized * 100).toFixed(1) + "%";
     }
-  }, [selectedLevel, stat, specialtyLabel, characterStat, character]);
+  }, [stat, character]);
 
   const selectedAscensionCost = useMemo(() => character.costs['ascend' + levelIndex] || undefined, [character, levelIndex])
-
+  
+  if (!characterStat) {
+    return null;
+  }
+  
   return (
     <div className={`flex flex-col gap-4 p-8 bg-black/40 rounded-xl border border-white/20 backdrop-blur-sm max-w-4xl mx-auto my-8`}>
       <h2 className="text-3xl font-bold text-center">Base Stats</h2>
@@ -93,7 +93,7 @@ export default function CharacterStatCard({ character, characterStat }: { charac
           <h3 className="text-lg">Ascend (Max level {selectedLevel} &rarr; {selectableLevels[levelIndex + 1]})</h3>
           <div className="flex flex-wrap gap-4 lg:gap-8 pt-4 justify-center">
             {selectedAscensionCost.map((item) => (
-              <ItemCard item={item} />
+              <ItemCard key={item.id} item={item} />
             ))}
           </div>
         </div>

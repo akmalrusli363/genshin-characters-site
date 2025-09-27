@@ -9,6 +9,15 @@ import { getUiIconPath } from "../api/constants";
 export default function CharacterDetailPage({ character }: { character: Character }) {
   const elements = useElements();
 
+  const [characterBirthday, setCharacterBirthday] = useState(character.birthday);
+  
+  useEffect(() => {
+    const birthdayDate = new Date(character.birthday);
+    birthdayDate.setFullYear(2020);
+    const birthday = birthdayDate.toLocaleDateString(undefined, {month:'long',day:'numeric'});
+    setCharacterBirthday(birthday);
+  }, [character]);
+
   if (!character) {
     return <p className="text-center text-xl p-8">Character data not available.</p>;
   }
@@ -27,14 +36,6 @@ export default function CharacterDetailPage({ character }: { character: Characte
     default: weaponIconUrl = "";
   }
   const enkaAvatarIcon = getUiIconPath(avatarIcon);
-
-  const [characterBirthday, setCharacterBirthday] = useState(character.birthday);
-  useEffect(() => {
-    const birthdayDate = new Date(character.birthday);
-    birthdayDate.setFullYear(2020);
-    const birthday = birthdayDate.toLocaleDateString(undefined, {month:'long',day:'numeric'});
-    setCharacterBirthday(birthday);
-  }, [character]);
 
   return (
     <div className={`flex flex-col lg:flex-row items-center lg:items-start gap-8 p-8 bg-black/40 rounded-xl border border-white/20 backdrop-blur-sm max-w-4xl mx-auto my-8`}>

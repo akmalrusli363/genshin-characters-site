@@ -8,7 +8,7 @@ export default interface Talents {
   passive2: CombatData;
   passive3: CombatData | undefined;
   passive4: CombatData | undefined;
-  costs: Map<String, ItemData[]>;
+  costs: Map<string, ItemData[]>;
   images: CombatImageData;
   version: string;
 }
@@ -18,7 +18,6 @@ export interface CombatData {
   descriptionRaw: string;
   description: string;
   flavorText: string | undefined;
-  attributes: any | undefined;
 }
 
 interface ItemData {

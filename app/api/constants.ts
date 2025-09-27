@@ -4,11 +4,11 @@ import { ElementResponse, mapElementResponseToElement } from "../data/elements"
 import Talents from "../data/talents"
 import { fetchWithEtag } from "../utils/etagCache"
 import CharacterStat from "../data/chara-stat"
+import { RawConstellationData } from "../data/constellations"
 
 const baseUrl = "https://genshin-db-api.vercel.app/api/v5/"
 const charactersUrl = "characters"
 const elementsUrl = "elements"
-const weaponsUrl = "weapons"
 const talentsUrl = "talents"
 const constellationsUrl = "constellations"
 const statsUrl = "stats"
@@ -53,7 +53,7 @@ export const getCharacterByName = cache(async (name: string) =>
     fetchWithEtag<Character>(`${baseUrl + charactersUrl}?${getParametersByQuery(name)}`))
 
 export const getConstellationsByCharaName = async (name: string) =>
-    fetchWithEtag<any>(`${baseUrl + constellationsUrl}?${getParameterByQuery(name)}`)
+    fetchWithEtag<RawConstellationData>(`${baseUrl + constellationsUrl}?${getParameterByQuery(name)}`)
 
 export const getTalentsByCharacterName = async (name: string) =>
     fetchWithEtag<Talents|null>(`${baseUrl + talentsUrl}?${getParameterByQuery(name)}`)

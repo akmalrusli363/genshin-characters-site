@@ -64,12 +64,6 @@ interface RawConstellationDetail {
   description: string;
 }
 
-interface ItemData {
-  id: number;
-  name: string;
-  count: number;
-}
-
 interface ConstellationImageData {
   filename_c1: string;
   filename_c2: string;

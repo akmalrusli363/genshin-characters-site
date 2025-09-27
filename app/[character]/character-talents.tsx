@@ -1,13 +1,10 @@
 'use client';
 
-import { useElements } from "@/app/element-context";
 import Talents, { CombatData } from "../data/talents";
 import { getUiIconPath } from "../api/constants";
 import Image from "next/image";
 
 export default function CharacterTalents({ talents }: { talents: Talents }) {
-  const elements = useElements();
-
   if (!talents) {
     return <p className="text-center text-xl p-8">Character data not available.</p>;
   }
