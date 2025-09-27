@@ -1,7 +1,7 @@
 
 import Image from "next/image";
 import { useElements } from "@/app/element-context";
-import { useContext } from "react";
+import { useCallback, useContext, useMemo } from "react";
 import { ShowRarityCardGlowContext } from "@/app/ui/theme";
 import Character from "@/app/data/character";
 import Link from "next/link";
@@ -11,18 +11,18 @@ import { getUiIconPath } from "./api/constants";
 export default function CharacterCard({ character }: { character: Character }) {
   const elements = useElements();
 
-  const weaponMapping = character.weaponText;
   const elementMapping = character.elementText;
   const elementIcon = elements.find(e => e.name === elementMapping)?.imageBase64 || "";
   const avatarIcon = character.images.filename_icon || "";
-  let weaponIconUrl = ""
-  switch(weaponMapping) {
-    case "Sword": weaponIconUrl = "/assets/Icon_Sword.png";
-    case "Polearm": weaponIconUrl = "/assets/Icon_Polearm.png";
-    case "Claymore": weaponIconUrl = "/assets/Icon_Claymore.png";
-    case "Catalyst": weaponIconUrl = "/assets/Icon_Catalyst.png";
-    case "Bow": weaponIconUrl = "/assets/Icon_Bow.png";
-  }
+  const weaponIconUrl = useMemo(() => {
+    switch(character.weaponText) {
+      case "Sword": return "/assets/Icon_Sword.png";
+      case "Polearm": return "/assets/Icon_Polearm.png";
+      case "Claymore": return "/assets/Icon_Claymore.png";
+      case "Catalyst": return "/assets/Icon_Catalyst.png";
+      case "Bow": return "/assets/Icon_Bow.png";
+    }
+  }, [character]);
   const enkaAvatarIcon = getUiIconPath(avatarIcon);
 
   const glowRarity = useContext(ShowRarityCardGlowContext);
@@ -49,8 +49,8 @@ export default function CharacterCard({ character }: { character: Character }) {
         <span className="text-sm">{character.rarity}★</span>
       </div>
       <div className="mb-2">
-        {elementIcon && <img src={elementIcon} alt={character.elementText} className="inline-block w-6 h-6 mr-2" />}
-        {weaponIconUrl && <img src={weaponIconUrl} alt={character.weaponText} className="inline-block w-8 h-8" />}
+        {elementIcon && <img src={elementIcon} title={character.elementText} alt={character.elementText} className="inline-block w-6 h-6 mr-2" />}
+        {weaponIconUrl && <img src={weaponIconUrl} title={character.weaponText} alt={character.weaponText} className="inline-block w-8 h-8" />}
       </div>
       <p className="text-xs sm:text-sm text-center">{character.elementText} - {character.weaponText}</p>
     </Link>
