@@ -49,8 +49,8 @@ export default function CharacterCard({ character }: { character: Character }) {
         <span className="text-sm">{character.rarity}★</span>
       </div>
       <div className="mb-2">
-        {elementIcon && <Image src={elementIcon} title={character.elementText} alt={character.elementText} className="inline-block w-6 h-6 mr-2" />}
-        {weaponIconUrl && <Image src={weaponIconUrl} title={character.weaponText} alt={character.weaponText} className="inline-block w-8 h-8" />}
+        {elementIcon && <Image src={elementIcon} title={character.elementText} alt={character.elementText} width={48} height={48} className="inline-block w-6 h-6 mr-2" />}
+        {weaponIconUrl && <Image src={weaponIconUrl} title={character.weaponText} alt={character.weaponText} width={48} height={48} className="inline-block w-8 h-8" />}
       </div>
       <p className="text-xs sm:text-sm text-center">{character.elementText} - {character.weaponText}</p>
     </Link>
