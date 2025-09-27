@@ -6,8 +6,11 @@ const nextConfig: NextConfig = {
 
 module.exports = {
   images: {
-    remotePatterns: [new URL('https://static.wikia.nocookie.net/gensin-impact/images/**')],
-    domains: ['enka.network', 'upload-os-bbs.mihoyo.com'],
+    remotePatterns: [
+      new URL('https://static.wikia.nocookie.net/gensin-impact/images/**'),
+      new URL('https://enka.network/ui/**'),
+      new URL('https://upload-os-bbs.mihoyo.com/**')
+    ],
   },
 }
 
