@@ -2,19 +2,21 @@ import { getAllElements, getCharacterByName, getCharacterStatsByName, getConstel
 import { ElementalProvider } from "@/app/element-context";
 import CharacterDetailPage from "@/app/[character]/character-detail-page";
 import { fromSlug, normalizeSlug } from "@/app/utils/slugify";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { mapToConstellationData } from "@/app/data/constellations";
 import CharacterTalents from "./character-talents";
 import CharacterConstellations from "./character-constellations";
 import FloatingBackButton from "@/app/ui/floating-back-button";
 import CharacterStatCard from "./character-stat";
-import CharacterStat from "../data/chara-stat";
 import Character from "../data/character";
 import { Suspense } from "react";
 
 export async function generateMetadata({ params }: { params: Promise<{ character: string }> }) {
   const { character } = await params;
   const characterData = await getCharacterByName(character);
+  if (!characterData) {
+    return notFound();
+  }
   return {
     title: characterData.name,
     description: `${characterData.elementText} ${characterData.weaponText} from ${characterData.region}`,
@@ -37,6 +39,9 @@ export default async function Page(
     getCharacterByName(characterName),
     getAllElements(),
   ])
+  if (!characterData || !elementData) {
+    return notFound()
+  }
   return (
     <>
       <FloatingBackButton backToHome={true} />
@@ -71,6 +76,9 @@ async function CharacterConstellationSection(
   {characterName, characterData}: {characterName: string, characterData: Character}
 ) {
   const constellationResponse = await getConstellationsByCharaName(characterName);
+  if (!constellationResponse) {
+    return null;
+  }
   const constellationData = mapToConstellationData(constellationResponse);
   return (
     <>

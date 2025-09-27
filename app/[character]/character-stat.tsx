@@ -2,8 +2,10 @@
 
 import { useCallback, useMemo, useState } from "react";
 import CharacterStat from "../data/chara-stat";
-import Character from "../data/character";
+import Character, { CostItem } from "../data/character";
 import { mapCharacterCombatScalingData } from "../data/mapper";
+import { getUiItemIconPath } from "../api/constants";
+import Image from "next/image";
 
 export default function CharacterStatCard({ character, characterStat }: { character: Character, characterStat: Record<string, CharacterStat> }) {
   const selectableLevels = [1, 20, 40, 50, 60, 70, 80, 90];
@@ -24,17 +26,21 @@ export default function CharacterStatCard({ character, characterStat }: { charac
       return (stat.specialized * 100).toFixed(1) + "%";
     }
   }, [selectedLevel, stat, specialtyLabel, characterStat, character]);
+
   const levelDescription = useCallback((index: number) => {
     return (index > 0 && selectableLevels.length - 1 > index) ? "Ascension " + index : (index > 0) ? "Max Level" : "Base"
   }, [selectableLevels])
 
+  const selectedLevelIndex = useMemo(() => selectableLevels.indexOf(selectedLevel), [selectableLevels, selectedLevel]);
+  const selectedAscensionCost = useMemo(() => character.costs['ascend' + selectedLevelIndex] || undefined, [character, selectedLevelIndex])
+
   return (
     <div className={`flex flex-col gap-4 p-8 bg-black/40 rounded-xl border border-white/20 backdrop-blur-sm max-w-4xl mx-auto my-8`}>
-      <h2 className="text-3xl font-bold text-center lg:text-left">Base Stats</h2>
+      <h2 className="text-3xl font-bold text-center">Base Stats</h2>
 
       {/* Level Selector */}
       {/* On mobile, this is a horizontally scrollable list. On larger screens, it wraps and centers. */}
-      <div className="flex flex-nowrap overflow-x-auto gap-2 mb-2 pb-2 lg:flex-wrap lg:justify-center"
+      <div className="flex flex-nowrap overflow-x-auto gap-2 mb-2 pb-2 py-2 lg:flex-wrap sm:justify-center"
         style={{ scrollbarWidth: 'none' }}>
         {selectableLevels.map((level, i) => (
           <button
@@ -58,7 +64,7 @@ export default function CharacterStatCard({ character, characterStat }: { charac
         ))}
       </div>
 
-      <div className="text-2xl text-center mb-2">Level {selectedLevel} ({levelDescription(selectableLevels.indexOf(selectedLevel))})</div>
+      <div className="text-2xl text-center mb-2">Level {selectedLevel} ({levelDescription(selectedLevelIndex)})</div>
 
       {/* Stats Display */}
       {stat && (
@@ -69,8 +75,28 @@ export default function CharacterStatCard({ character, characterStat }: { charac
           <StatAttributeField label={specialtyLabel || 'Specialty'} value={specialtyStat} />
         </div>
       )}
+
+      {/* Ascension Cost Display */}
+      {selectedAscensionCost && (
+        <div className="self-center flex flex-col items-center justify-center pt-4 border-t border-white/20">
+          <h3 className="text-lg">Ascend (Max level {selectedLevel} &rarr; {selectableLevels[selectedLevelIndex + 1]})</h3>
+          <div className="flex flex-wrap gap-4 lg:gap-8 pt-4 justify-center">
+            {selectedAscensionCost.map((item) => (
+              <ItemCard item={item} />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
+}
+
+export function ItemCard({item, size = 64}: { item: CostItem, size?: number }) {
+  return (<div key={item.name} className="flex flex-col items-center text-center w-24">
+    <Image src={getUiItemIconPath(item.id)} alt={item.name} title={item.name} width={size} height={size} priority className="flex-shrink-0 h-16 w-16 lg:h-24 lg:w-24" />
+    <p className="font-semibold">x{item.count}</p>
+    <p className="text-xs mt-1">{item.name}</p>
+  </div>)
 }
 
 function StatAttributeField({ label, value }: { label: string, value: string | number }) {

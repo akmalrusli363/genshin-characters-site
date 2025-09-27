@@ -39,13 +39,14 @@ const getStatByQuery = (query: string) => new URLSearchParams({
 })
 
 export const getUiIconPath = (value: string) => "https://enka.network/ui/" + value + ".png";
+export const getUiItemIconPath = (itemId: number) => `https://enka.network/ui/UI_ItemIcon_${itemId}.png`;
 
 export const getAllCharacters = async () =>
     fetchWithEtag<Character[]>(`${baseUrl + charactersUrl}?${getAllParameters}`)
 
 export const getAllElements = async () => {
     const response = await fetchWithEtag<ElementResponse[]>(`${baseUrl + elementsUrl}?${getAllParameters}`)
-    return response.map(mapElementResponseToElement)
+    return response && response.map(mapElementResponseToElement)
 }
 
 export const getCharacterByName = cache(async (name: string) =>

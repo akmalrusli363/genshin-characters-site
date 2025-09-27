@@ -9,7 +9,7 @@ export default function FloatingBackButton({backToHome}: {backToHome: boolean | 
     <button
       onClick={() => (backToHome) ? router.push('/') : router.back()}
       className="fixed top-4 left-4 z-50 p-3 bg-black/50 text-white rounded-full shadow-lg hover:bg-white/20 backdrop-blur-sm transition-colors"
-      aria-label="Go back"
+      aria-label="Go back" title={backToHome ? 'Back to Home' : 'Back'}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

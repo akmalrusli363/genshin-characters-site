@@ -11,15 +11,6 @@ export interface CostItem {
   count: number;
 }
 
-export interface Costs {
-  ascend1: CostItem[];
-  ascend2: CostItem[];
-  ascend3: CostItem[];
-  ascend4: CostItem[];
-  ascend5: CostItem[];
-  ascend6: CostItem[];
-}
-
 export interface AvatarImages {
   image: string;
   card: string;
@@ -60,7 +51,7 @@ export default interface Character {
   substatText: string;
   constellation: string;
   cv: CV;
-  costs: Costs;
+  costs: Record<string, CostItem[]>;
   images: AvatarImages;
   url: Url;
   version: string;

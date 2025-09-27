@@ -3,13 +3,13 @@ interface EtagCacheEntry<T> {
   data: T;
 }
 
-export async function fetchWithEtag<T>(url: string | URL): Promise<T> {
+export async function fetchWithEtag<T>(url: string | URL): Promise<T | undefined> {
   const urlString = url.toString();
   const headers: HeadersInit = {};
 
   // 1. Check for a cached entry in localStorage (client-side only)
   const isClient = typeof window !== 'undefined';
-  let cachedEntry: EtagCacheEntry<T> | null = null;
+  let cachedEntry: EtagCacheEntry<T> | undefined = undefined;
 
   if (isClient) {
     console.log(`[Cache] Checking for ${urlString}`)
@@ -40,21 +40,39 @@ export async function fetchWithEtag<T>(url: string | URL): Promise<T> {
   // 2. If the server returns 304, it means our cache is still valid.
   if (res.status === 304) {
     console.log(`[Cache] Hit for ${urlString}`);
-    return cachedEntry!.data; // Safe due to 304 response logic
+    // It's possible the cached entry is undefined, so we return it as is.
+    return cachedEntry ? cachedEntry.data : undefined;
   }
   
   if (!res.ok) {
     throw new Error(`[Fetch] Failed to fetch ${urlString}, received status: ${res.status}`);
   }
 
+  // Handle empty responses (like 204 No Content) before trying to parse JSON.
+  if (res.headers.get("Content-Length") === "0" || res.status === 204) {
+    console.log(`[Fetch] Received empty response for ${urlString}`);
+    return undefined;
+  }
+
   // 3. If we get a new response, parse it and update the cache.
   const etag = res.headers.get("Etag");
-  const data: T = await res.json();
-  console.log(`[Cache] Updating cache for ${urlString} -> ${etag}`);
+  let data: T;
+  try {
+    data = await res.json();
+  } catch (error) {
+    console.error(`[Fetch] Failed to parse JSON for ${urlString}:`, error);
+    throw new Error(`Failed to parse response for ${urlString}.`);
+  }
 
   if (isClient && etag) {
-    const newEntry: EtagCacheEntry<T> = { etag, data };
-    localStorage.setItem(urlString, JSON.stringify(newEntry));
+    try {
+      const newEntry: EtagCacheEntry<T> = { etag, data };
+      localStorage.setItem(urlString, JSON.stringify(newEntry));
+      console.log(`[Cache] Updating cache for ${urlString} -> ${etag}`);
+    } catch (error) {
+      console.error(`[Cache] Failed to set cache for ${urlString}:`, error);
+      // This is not a critical error, so we can just log it and continue.
+    }
   }
 
   return data;
