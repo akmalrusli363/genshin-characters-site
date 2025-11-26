@@ -22,24 +22,6 @@ export default function CharacterListPage({ characters }: {
           <div className="text-l">Fetched from <i><u>genshin-db-api.vercel.app</u></i></div>
         </header>
 
-        <section className="flex justify-center mb-8 items-center">
-          <div>Glow mode: &nbsp;</div>
-          <div className="flex rounded-lg border border-white/30 overflow-hidden">
-            <button
-              onClick={() => setGlowMode(true)}
-              className={`px-4 py-2 transition-colors ${glowMode ? 'bg-white/20' : 'bg-black/40 hover:bg-white/10'}`}
-            >
-              On
-            </button>
-            <button
-              onClick={() => setGlowMode(false)}
-              className={`px-4 py-2 transition-colors ${!glowMode ? 'bg-white/20' : 'bg-black/40 hover:bg-white/10'}`}
-            >
-              Off
-            </button>
-          </div>
-        </section>
-
         <ShowRarityCardGlowContext value={glowMode}>
           <CharacterCardCollection characters={characters} />
         </ShowRarityCardGlowContext>
@@ -53,6 +35,13 @@ export default function CharacterListPage({ characters }: {
           </div>
         </section>
       </main>
+      <button
+        onClick={() => setGlowMode(!glowMode)}
+        className={`fixed bottom-4 right-4 z-50 p-3 text-white rounded-full shadow-lg backdrop-blur-sm transition-colors ${glowMode ? 'bg-amber-400/50 hover:bg-amber-200/50' : 'bg-gray-700/50 hover:bg-white/20'}`}
+        title={`Toggle Glow Mode: ${glowMode ? 'On' : 'Off'}`}
+      >
+        <GlowIcon enabled={glowMode} />
+      </button>
       <footer className="flex w-full items-center justify-center gap-[24px] p-8 flex-wrap">
         Built using Next.js
       </footer>
@@ -70,6 +59,7 @@ function CharacterCardCollection({ characters }: {
   const [rarity, setRarity] = useState(0);
   const [search, setSearch] = useState("");
   const [numToShow, setNumToShow] = useState(12);
+  const [sortByVersion, setSortByVersion] = useState<'asc' | 'desc'>('desc');
   const [currentPage, setCurrentPage] = useState(1);
   const cardContainerRef = useRef<HTMLDivElement>(null);
 
@@ -103,7 +93,7 @@ function CharacterCardCollection({ characters }: {
   // Reset page to 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [region, element, weapon, search]);
+  }, [region, element, weapon, search, sortByVersion]);
 
   // Get unique options
   const regions = useMemo(() => getUnique(characters, "region"), [characters]);
@@ -113,7 +103,7 @@ function CharacterCardCollection({ characters }: {
 
   // Filter characters based on selection
   const allFilteredCharacters = useMemo(() => {
-    return characters
+    const filtered = characters
     .filter(c => c.name)
     .filter(c =>
       (!region || c.region === region) &&
@@ -121,8 +111,14 @@ function CharacterCardCollection({ characters }: {
       (!weapon || c.weaponText === weapon) &&
       (!rarity || c.rarity === rarity) &&
       (!search || c.name.toLowerCase().includes(search.toLowerCase()))
-    )
-  }, [characters, region, element, weapon, rarity, search]);
+    );
+
+    return filtered.sort((a, b) => {
+      return sortByVersion === 'asc'
+        ? a.version.localeCompare(b.version)
+        : b.version.localeCompare(a.version);
+    });
+  }, [characters, region, element, weapon, rarity, search, sortByVersion]);
 
   const totalPages = Math.ceil(allFilteredCharacters.length / numToShow) || 1;
   const paginatedCharacters = allFilteredCharacters.slice((currentPage - 1) * numToShow, currentPage * numToShow);
@@ -152,13 +148,22 @@ function CharacterCardCollection({ characters }: {
           <option value="0">All ★</option>
           {rarities.map(r => <option key={String(r)} value={String(r)}>{String(r)}</option>)}
         </select>
-        <input
-          type="text"
-          placeholder="Search by name"
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          className="bg-black/40 border border-white/30 rounded px-2 py-1 flex-grow w-full lg:w-auto"
-        />
+        <div className="flex flex-grow w-full lg:w-auto gap-4">
+          <input
+            type="text"
+            placeholder="Search by name"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="bg-black/40 border border-white/30 rounded px-2 py-1 flex-grow w-auto"
+          />
+          <button
+            onClick={() => setSortByVersion(sortByVersion === 'asc' ? 'desc' : 'asc')}
+            className="bg-black/40 border border-white/30 rounded px-2 py-1 flex items-center gap-2 hover:bg-white/20 transition-colors"
+            title={`Sort by version: ${sortByVersion === 'asc' ? 'Oldest First' : 'Newest First'}`}
+          >
+            <SortIcon /> <span>{sortByVersion === 'asc' ? 'Oldest' : 'Newest'}</span>
+          </button>
+        </div>
       </div>
 
       <div ref={cardContainerRef} className="flex gap-6 flex-wrap justify-center flex-grow">
@@ -247,3 +252,18 @@ function PaginationControls({ currentPage, totalPages, onPageChange }: {
     </div>
   );
 }
+
+const SortIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+    <path d="M3.5 2.5a.5.5 0 0 0-1 0v10a.5.5 0 0 0 1 0zm2.5 10a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m-2-4a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m2-4a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5"/>
+  </svg>
+);
+
+const GlowIcon = ({ enabled }: { enabled: boolean }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M9 18h6" />
+    <path d="M10 22h4" />
+    <path d="M12 2a7 7 0 0 0-7 7c0 3 2 5 2 9h10c0-4 2-6 2-9a7 7 0 0 0-7-7Z" />
+    {enabled && <path d="M12 12a3 3 0 0 0 3-3" />}
+  </svg>
+);

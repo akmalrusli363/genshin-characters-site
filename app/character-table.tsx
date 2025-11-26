@@ -46,18 +46,13 @@ const config: (elements: Element[]) => {
   }
 };
 
-// function getCharactersByElementAndWeapon(characters: Character[], element: string, weapon: string) {
-//   return characters.filter(
-//     (char) => char.elementText === element && char.weaponText === weapon
-//   );
-// }
-
 export default function CharacterTableView({ characters }: {
   characters: Character[]
 }) {
   const elements = useElements();
   const [tableColumnField, setTableColumnField] = useState("elementText");
   const [tableRowField, setTableRowField] = useState("weaponText");
+  const [rarityChecked, setRarityChecked] = useState(false);
 
   const handleSwap = () => {
     const temp = tableColumnField;
@@ -98,6 +93,15 @@ export default function CharacterTableView({ characters }: {
             ))}
           </select>
         </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setRarityChecked(!rarityChecked)}
+            className={`p-2 text-white rounded-full shadow-lg backdrop-blur-sm transition-colors ${rarityChecked ? 'bg-amber-400/50 hover:bg-amber-200/50' : 'bg-gray-700/50 hover:bg-white/20'}`}
+            title={`Toggle Rarity Grouping: ${rarityChecked ? 'On' : 'Off'}`}
+          >
+            Rarity grouping
+          </button>
+        </div>
       </div>
       <div className="w-[85vw] lg:w-auto overflow-x-auto">
         <CharacterTable characters={characters} mappersForTable={mappers} rowSelector={tableRowField} colSelector={tableColumnField} />
@@ -106,10 +110,10 @@ export default function CharacterTableView({ characters }: {
   )
 }
 
-export function CharacterTable({ characters, mappersForTable, rowSelector, colSelector }: {
+export function CharacterTable({ characters, mappersForTable, rowSelector, colSelector, rarityGrouping }: {
   characters: Character[],
   mappersForTable: { [key: string]: { label: string; values: ImagePair[] } },
-  rowSelector: string, colSelector: string
+  rowSelector: string, colSelector: string, rarityGrouping: boolean,
 }) {
   const characterList = pivot<Character>(characters, rowSelector as keyof Character, colSelector as keyof Character);
   const colSelectorMapper = mappersForTable[colSelector];
@@ -130,12 +134,35 @@ export function CharacterTable({ characters, mappersForTable, rowSelector, colSe
   };
   const tableCell = (row: string, col: string) => {
     const charas = characterList[row][col];
+    const groupedByRarity = charas.reduce((acc, curr) => {
+      const key = curr.rarity;
+      (acc[key] ??= []).push(curr);
+      return acc;
+    }, {} as Record<number, Character[]>);
     return (
       <td key={col} style={{
         border: "1px solid #ccc", padding: "1rem", alignContent: "center",
         textAlign: "center", verticalAlign: "middle", margin: "auto",
         justifyItems: "center", justifyContent: "center"
       }}>
+        {groupedByRarity && Object.entries(groupedByRarity).map(([k,v])=>{
+          const cn = v
+          return (
+            <div key={k} style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "8px",
+              justifyContent: "center",
+              maxWidth: "240px", /* 3 cards * (64px width + 8px gap) */
+              margin: "auto"
+            }}>
+              {cn && cn.map((char, e) => (
+                <p key={e}>{char.name}</p>
+              ))}
+            </div>
+          )
+          // return (<p key={k}>{k} - {v.toString()}</p>)
+        })}
         <div style={{
           display: "flex",
           flexWrap: "wrap",
