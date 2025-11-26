@@ -50,7 +50,7 @@ export const getAllElements = async () => {
 }
 
 export const getCharacterByName = cache(async (name: string) =>
-    fetchWithEtag<Character>(`${baseUrl + charactersUrl}?${getParametersByQuery(name)}`))
+    fetchWithEtag<Character>(`${baseUrl + charactersUrl}?${getParameterByQuery(name)}`))
 
 export const getConstellationsByCharaName = async (name: string) =>
     fetchWithEtag<RawConstellationData>(`${baseUrl + constellationsUrl}?${getParameterByQuery(name)}`)

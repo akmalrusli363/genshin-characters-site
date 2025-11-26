@@ -11,11 +11,9 @@ export default async function Home() {
     return <p className="center text-center text-2xl w-screen p-8 h-screen">No characters found</p>;
   } 
 
-  characterData?.sort((a, b) => a.version.localeCompare(b.version));
   return (
     <ElementalProvider elements={elementData}>
       <CharacterListPage characters={characterData} />
     </ElementalProvider>
   );
 }
-

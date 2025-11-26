@@ -110,10 +110,10 @@ export default function CharacterTableView({ characters }: {
   )
 }
 
-export function CharacterTable({ characters, mappersForTable, rowSelector, colSelector, rarityGrouping }: {
+export function CharacterTable({ characters, mappersForTable, rowSelector, colSelector }: {
   characters: Character[],
   mappersForTable: { [key: string]: { label: string; values: ImagePair[] } },
-  rowSelector: string, colSelector: string, rarityGrouping: boolean,
+  rowSelector: string, colSelector: string,
 }) {
   const characterList = pivot<Character>(characters, rowSelector as keyof Character, colSelector as keyof Character);
   const colSelectorMapper = mappersForTable[colSelector];

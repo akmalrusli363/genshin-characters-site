@@ -1,3 +1,5 @@
+import ItemData from "./items";
+
 export default interface Talents {
   id: number;
   name: string;
@@ -18,12 +20,6 @@ export interface CombatData {
   descriptionRaw: string;
   description: string;
   flavorText: string | undefined;
-}
-
-interface ItemData {
-  id: number;
-  name: string;
-  count: number;
 }
 
 interface CombatImageData {

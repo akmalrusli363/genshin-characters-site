@@ -43,7 +43,6 @@ function mapToConstellationDetail(data: RawConstellationDetail, constellationLev
   return {
     level: constellationLevel,
     name: data.name,
-    descriptionRaw: data.descriptionRaw,
     description: data.description,
     imagePath: imagePath,
   }
@@ -53,7 +52,6 @@ function mapToConstellationDetail(data: RawConstellationDetail, constellationLev
 export interface ConstellationDetail {
   level: number;
   name: string;
-  descriptionRaw: string;
   description: string;
   imagePath: string;
 }
