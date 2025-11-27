@@ -99,21 +99,21 @@ export default function CharacterTableView({ characters }: {
             className={`p-2 text-white rounded-full shadow-lg backdrop-blur-sm transition-colors ${rarityChecked ? 'bg-amber-400/50 hover:bg-amber-200/50' : 'bg-gray-700/50 hover:bg-white/20'}`}
             title={`Toggle Rarity Grouping: ${rarityChecked ? 'On' : 'Off'}`}
           >
-            Rarity grouping
+            Toggle Rarity Grouping
           </button>
         </div>
       </div>
       <div className="w-[85vw] lg:w-auto overflow-x-auto">
-        <CharacterTable characters={characters} mappersForTable={mappers} rowSelector={tableRowField} colSelector={tableColumnField} />
+        <CharacterTable characters={characters} mappersForTable={mappers} rowSelector={tableRowField} colSelector={tableColumnField} rarityChecked={rarityChecked} />
       </div>
     </section>
   )
 }
 
-export function CharacterTable({ characters, mappersForTable, rowSelector, colSelector }: {
+export function CharacterTable({ characters, mappersForTable, rowSelector, colSelector, rarityChecked }: {
   characters: Character[],
   mappersForTable: { [key: string]: { label: string; values: ImagePair[] } },
-  rowSelector: string, colSelector: string,
+  rowSelector: string, colSelector: string, rarityChecked: boolean
 }) {
   const characterList = pivot<Character>(characters, rowSelector as keyof Character, colSelector as keyof Character);
   const colSelectorMapper = mappersForTable[colSelector];
@@ -134,35 +134,67 @@ export function CharacterTable({ characters, mappersForTable, rowSelector, colSe
   };
   const tableCell = (row: string, col: string) => {
     const charas = characterList[row][col];
-    const groupedByRarity = charas.reduce((acc, curr) => {
+    const groupedByRarity = charas?.reduce((acc, curr) => {
       const key = curr.rarity;
       (acc[key] ??= []).push(curr);
       return acc;
     }, {} as Record<number, Character[]>);
-    return (
+    const groupedRarityGrid = (
       <td key={col} style={{
-        border: "1px solid #ccc", padding: "1rem", alignContent: "center",
+        border: "1px solid #ccc",
+        textAlign: "center",
+        verticalAlign: "middle",
+        gap: "8px",
+        height: "100%",
+      }}>
+        <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+          {groupedByRarity && Object.entries(groupedByRarity)
+            ?.sort((a, b) => Number(b[0]) - Number(a[0]))
+            ?.map(([rarity, list], idx) => (
+              <div
+                key={rarity}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  padding: "1rem .5rem",
+                  gap: "8px",
+                  width: "100%",
+                  flex: "1",
+                  borderTop: idx === 0 ? "none" : "1px solid #ccc6"
+                }}
+              >
+                <div style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  placeContent: "center",
+                  paddingBottom: ".5rem",
+                }}>
+                  <span style={{ fontWeight: 700 }}>{rarity}★</span>
+                </div>
+
+                <div style={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: "8px",
+                  justifyContent: "center"
+                }}>
+                  {list?.map((char) => (
+                    <CharacterCardCell key={char.name} character={char} />
+                  ))}
+                </div>
+              </div>
+            ))}
+        </div>
+      </td>
+    );
+    return rarityChecked ? groupedRarityGrid : (
+      <td key={col} style={{
+        border: "1px solid #ccc", padding: "1rem 0rem", alignContent: "center",
         textAlign: "center", verticalAlign: "middle", margin: "auto",
         justifyItems: "center", justifyContent: "center"
       }}>
-        {groupedByRarity && Object.entries(groupedByRarity).map(([k,v])=>{
-          const cn = v
-          return (
-            <div key={k} style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "8px",
-              justifyContent: "center",
-              maxWidth: "240px", /* 3 cards * (64px width + 8px gap) */
-              margin: "auto"
-            }}>
-              {cn && cn.map((char, e) => (
-                <p key={e}>{char.name}</p>
-              ))}
-            </div>
-          )
-          // return (<p key={k}>{k} - {v.toString()}</p>)
-        })}
         <div style={{
           display: "flex",
           flexWrap: "wrap",
@@ -171,8 +203,8 @@ export function CharacterTable({ characters, mappersForTable, rowSelector, colSe
           maxWidth: "240px", /* 3 cards * (64px width + 8px gap) */
           margin: "auto"
         }}>
-          {charas && charas.map((char, e) => (
-            <CharacterCardCell key={e} character={char} />
+          {charas && charas.map((char) => (
+            <CharacterCardCell key={char.name} character={char} />
           ))}
         </div>
       </td>
@@ -194,7 +226,7 @@ export function CharacterTable({ characters, mappersForTable, rowSelector, colSe
   }
 
   return (
-    <table>
+    <table style={{ height: "100%", borderCollapse: "collapse", margin: "auto" }}>
       <thead>
         <tr>
           <th style={{ border: "1px solid #ccc", padding: "8px" }}>
@@ -221,8 +253,8 @@ export function CharacterTable({ characters, mappersForTable, rowSelector, colSe
 
 function CharacterCardCell({ character }: { character: Character }) {
   const glowMode = useContext(ShowRarityCardGlowContext);
-  const fourStarGlowClass = 'drop-shadow-[0_0_0.5rem_theme(colors.purple.900)]';
-  const fiveStarGlowClass = 'drop-shadow-[0_0_0.5rem_theme(colors.amber.900)]';
+  const fourStarGlowClass = 'drop-shadow-[0_0_0.4rem_theme(colors.purple.600)]';
+  const fiveStarGlowClass = 'drop-shadow-[0_0_0.4rem_theme(colors.amber.600)]';
   const glowRarityClass = (glowMode && character.rarity === 4) ? fourStarGlowClass : (glowMode && character.rarity === 5) ? fiveStarGlowClass : '';
   const characterImageUrl = character?.images?.filename_iconCard ?? "";
   return (
