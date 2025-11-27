@@ -35,7 +35,7 @@ function ConstellationCard({ constellation }: { constellation: ConstellationDeta
       </div>
       <div className="flex flex-1/9 grow-0 flex-col shrink-0 break-words break-all justify-center gap-2">
         {constellation.imagePath && <Image
-          src={constellation.imagePath ? getUiIconPath(constellation.imagePath) : "/assets/placeholder.png"}
+          src={constellation.imagePath ? getUiIconPath(constellation.imagePath) : "/assets/Icon_Unknown.png"}
           alt={constellation.name ? constellation.name : "No constellation image"}
           width={80}
           height={80}

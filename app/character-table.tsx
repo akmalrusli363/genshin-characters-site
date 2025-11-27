@@ -260,7 +260,7 @@ function CharacterCardCell({ character }: { character: Character }) {
   return (
     <Link href={`${normalizeSlug(character.name.toLowerCase())}`} className="flex flex-col items-center w-16">
       {characterImageUrl && <Image
-        src={characterImageUrl ? getUiIconPath(characterImageUrl) : "/assets/placeholder.png"}
+        src={characterImageUrl ? getUiIconPath(characterImageUrl) : "/assets/Icon_Unknown.png"}
         alt={character ? character.name : "No Character"}
         width={64}
         height={64}

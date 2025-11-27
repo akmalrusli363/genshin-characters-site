@@ -21,12 +21,6 @@ const getAllParameters = new URLSearchParams({
   verboseCategories: "true"
 })
 
-const getParametersByQuery = (query: string) => new URLSearchParams({
-  query: query,
-  matchCategories: "true",
-  verboseCategories: "true"
-})
-
 const getParameterByQuery = (query: string) => new URLSearchParams({
   query: query,
   verboseCategories: "true"
