@@ -19,6 +19,16 @@ async function fetchWithoutEtag<T>(url: string | URL): Promise<T | undefined> {
     throw new Error(`Failed to fetch data for ${urlString}. Please check your network connection.`);
   }
 
+  if (!res.ok) {
+    throw new Error(`[Fetch] Failed to fetch ${urlString}, received status: ${res.status}`);
+  }
+
+  // Handle empty responses (like 204 No Content) before trying to parse JSON.
+  if (res.headers.get("Content-Length") === "0" || res.status === 204) {
+    console.log(`[Fetch] Received empty response for ${urlString}`);
+    return undefined;
+  }
+
   let data: T;
   try {
     data = await res?.json();
