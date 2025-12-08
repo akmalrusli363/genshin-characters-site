@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useRef, useMemo } from "react";
 import { getUnique } from "@/app/helpers";
-import CharacterTableView from "@/app/character-table";
-import CharacterCard from "@/app/character-card";
+import CharacterTableView from "./character-table";
+import CharacterCard from "./character-card";
 import Character from "@/app/data/character"
 import { ShowRarityCardGlowContext } from "@/app/ui/theme";
 

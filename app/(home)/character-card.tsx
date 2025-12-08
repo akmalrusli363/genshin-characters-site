@@ -5,8 +5,8 @@ import { useContext, useMemo } from "react";
 import { ShowRarityCardGlowContext } from "@/app/ui/theme";
 import Character from "@/app/data/character";
 import Link from "next/link";
-import { normalizeSlug } from "./utils/slugify";
-import { getUiIconPath } from "./api/constants";
+import { normalizeSlug } from "@/app/utils/slugify";
+import { getUiIconPath } from "@/app/api/constants";
 
 export default function CharacterCard({ character }: { character: Character }) {
   const elements = useElements();

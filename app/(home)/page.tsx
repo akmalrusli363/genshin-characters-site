@@ -1,6 +1,6 @@
 import { getAllCharacters, getAllElements } from "@/app/api/constants";
-import CharacterListPage from "@/app/character-page";
 import { ElementalProvider } from "@/app/element-context";
+import CharacterListPage from "./character-page";
 
 export default async function Home() {
   const [characterData, elementData] = await Promise.all([

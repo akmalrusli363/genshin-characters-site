@@ -6,8 +6,8 @@ import Character from "@/app/data/character"
 import Element from "@/app/data/elements";
 import { ShowRarityCardGlowContext } from "@/app/ui/theme";
 import Link from "next/link";
-import { normalizeSlug } from "./utils/slugify";
-import { getUiIconPath } from "./api/constants";
+import { normalizeSlug } from "@/app/utils/slugify";
+import { getUiIconPath } from "@/app/api/constants";
 
 const weaponImageMap: Record<string, string> = {
   "Sword": "/assets/Icon_Sword.png",
