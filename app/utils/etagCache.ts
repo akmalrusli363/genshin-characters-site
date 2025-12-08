@@ -3,6 +3,33 @@ interface EtagCacheEntry<T> {
   data: T;
 }
 
+export async function fetchData<T>(url: string | URL): Promise<T | undefined> {
+  return fetchWithoutEtag(url);
+}
+
+async function fetchWithoutEtag<T>(url: string | URL): Promise<T | undefined> {
+  const urlString = url.toString();
+
+  let res: Response | undefined;
+  try {
+    res = await fetch(url);
+  } catch (error) {
+    console.error(`[Fetch] Network error for ${urlString}:`, error);
+    // Re-throw the error so the caller can handle it, e.g., by showing an error page.
+    throw new Error(`Failed to fetch data for ${urlString}. Please check your network connection.`);
+  }
+
+  let data: T;
+  try {
+    data = await res?.json();
+  } catch (error) {
+    console.error(`[Fetch] Failed to parse JSON for ${urlString}:`, error);
+    throw new Error(`Failed to parse response for ${urlString}.`);
+  }
+  return data;
+}
+
+
 export async function fetchWithEtag<T>(url: string | URL): Promise<T | undefined> {
   const urlString = url.toString();
   const headers: HeadersInit = {};

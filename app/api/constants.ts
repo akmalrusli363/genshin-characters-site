@@ -2,7 +2,7 @@ import { cache } from "react"
 import Character from "../data/character"
 import { ElementResponse, mapElementResponseToElement } from "../data/elements"
 import Talents from "../data/talents"
-import { fetchWithEtag } from "../utils/etagCache"
+import { fetchData } from "../utils/etagCache"
 import CharacterStat from "../data/chara-stat"
 import { RawConstellationData } from "../data/constellations"
 
@@ -36,22 +36,22 @@ export const getUiIconPath = (value: string) => "https://enka.network/ui/" + val
 export const getUiItemIconPath = (itemId: number) => `https://enka.network/ui/UI_ItemIcon_${itemId}.png`;
 
 export const getAllCharacters = async () =>
-    fetchWithEtag<Character[]>(`${baseUrl + charactersUrl}?${getAllParameters}`)
+    fetchData<Character[]>(`${baseUrl + charactersUrl}?${getAllParameters}`)
 
 export const getAllElements = async () => {
-    const response = await fetchWithEtag<ElementResponse[]>(`${baseUrl + elementsUrl}?${getAllParameters}`)
+    const response = await fetchData<ElementResponse[]>(`${baseUrl + elementsUrl}?${getAllParameters}`)
     return response && response.map(mapElementResponseToElement)
 }
 
 export const getCharacterByName = cache(async (name: string) =>
-    fetchWithEtag<Character>(`${baseUrl + charactersUrl}?${getParameterByQuery(name)}`))
+    fetchData<Character>(`${baseUrl + charactersUrl}?${getParameterByQuery(name)}`))
 
 export const getConstellationsByCharaName = async (name: string) =>
-    fetchWithEtag<RawConstellationData>(`${baseUrl + constellationsUrl}?${getParameterByQuery(name)}`)
+    fetchData<RawConstellationData>(`${baseUrl + constellationsUrl}?${getParameterByQuery(name)}`)
 
 export const getTalentsByCharacterName = async (name: string) =>
-    fetchWithEtag<Talents|null>(`${baseUrl + talentsUrl}?${getParameterByQuery(name)}`)
+    fetchData<Talents|null>(`${baseUrl + talentsUrl}?${getParameterByQuery(name)}`)
 
 export const getCharacterStatsByName = async (name: string) =>
-    fetchWithEtag<Record<string, CharacterStat>>(`${baseUrl + statsUrl}?${getStatByQuery(name)}`)
+    fetchData<Record<string, CharacterStat>>(`${baseUrl + statsUrl}?${getStatByQuery(name)}`)
 
