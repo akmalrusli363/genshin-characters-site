@@ -6,12 +6,13 @@ import Character, { CostItem } from "../data/character";
 import { mapCharacterCombatScalingData } from "../data/mapper";
 import { getUiItemIconPath } from "../api/constants";
 import Image from "next/image";
+import CharacterStatPlaceholder from "./placeholder/character-stat-placeholder";
 
-function useLevelBreakpoints(selectableLevels: number[]): Record<number, {label: string, index: number}> {
-  const record: Record<number, {label: string, index: number}> = {};
+function useLevelBreakpoints(selectableLevels: number[]): Record<number, { label: string, index: number }> {
+  const record: Record<number, { label: string, index: number }> = {};
   selectableLevels.forEach((level, index) => {
     const label = (index > 0 && selectableLevels.length - 1 > index) ? "Ascension " + index : (index > 0) ? "Max Level" : "Base";
-    record[level] = {label: label, index: index};
+    record[level] = { label: label, index: index };
   });
   return record;
 }
@@ -20,14 +21,14 @@ export default function CharacterStatCard({ character, characterStat }: { charac
   const selectableLevels = [1, 20, 40, 50, 60, 70, 80, 90];
   const levelBreakpoints = useLevelBreakpoints(selectableLevels);
   const [selectedLevel, setSelectedLevel] = useState(selectableLevels[0]);
-  const {label: levelLabel, index: levelIndex} = useMemo(
+  const { label: levelLabel, index: levelIndex } = useMemo(
     () => levelBreakpoints[selectedLevel], [levelBreakpoints, selectedLevel]
   );
 
   const specialtyLabel = useMemo(() => {
     return mapCharacterCombatScalingData(character.substatType)
   }, [character]);
-  
+
   const stat = useMemo(() => {
     return characterStat[selectedLevel.toString() + '+'] || characterStat[selectedLevel.toString()]
   }, [selectedLevel, characterStat]);
@@ -40,11 +41,11 @@ export default function CharacterStatCard({ character, characterStat }: { charac
   }, [stat, character]);
 
   const selectedAscensionCost = useMemo(() => character.costs['ascend' + levelIndex] || undefined, [character, levelIndex])
-  
+
   if (!characterStat) {
-    return null;
+    return CharacterStatPlaceholder();
   }
-  
+
   return (
     <div className={`flex flex-col gap-4 p-8 bg-black/40 rounded-xl border border-white/20 backdrop-blur-sm max-w-4xl mx-auto my-8`}>
       <h2 className="text-3xl font-bold text-center">Base Stats</h2>
@@ -102,7 +103,7 @@ export default function CharacterStatCard({ character, characterStat }: { charac
   )
 }
 
-export function ItemCard({item, size = 64}: { item: CostItem, size?: number }) {
+export function ItemCard({ item, size = 64 }: { item: CostItem, size?: number }) {
   return (<div key={item.name} className="flex flex-col items-center text-center w-24">
     <Image src={getUiItemIconPath(item.id)} alt={item.name} title={item.name} width={size} height={size} priority className="flex-shrink-0 h-16 w-16 lg:h-24 lg:w-24" />
     <p className="font-semibold">x{item.count}</p>

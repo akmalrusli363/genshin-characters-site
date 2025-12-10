@@ -3,6 +3,7 @@
 import Talents, { CombatData } from "../data/talents";
 import { getUiIconPath } from "../api/constants";
 import Image from "next/image";
+import CharacterTalentPlaceholder from "./placeholder/character-talent-placeholder";
 
 enum TalentCategories {
   NORMAL = "Normal Attack",
@@ -14,7 +15,7 @@ enum TalentCategories {
 export default function CharacterTalents({ talents }: { talents: Talents }) {
 
   if (!talents) {
-    return <p className="text-center text-xl p-8">Character data not available.</p>;
+    return CharacterTalentPlaceholder();
   }
 
   return (

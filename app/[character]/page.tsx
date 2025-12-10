@@ -10,6 +10,9 @@ import FloatingBackButton from "@/app/ui/floating-back-button";
 import CharacterStatCard from "./character-stat";
 import Character from "../data/character";
 import { Suspense } from "react";
+import CharacterStatPlaceholder from "./placeholder/character-stat-placeholder";
+import CharacterTalentPlaceholder from "./placeholder/character-talent-placeholder";
+import CharacterConstellationPlaceholder from "./placeholder/character-constellation-placeholder";
 
 export async function generateMetadata({ params }: { params: Promise<{ character: string }> }) {
   const { character } = await params;
@@ -46,15 +49,17 @@ export default async function Page(
     <>
       <FloatingBackButton backToHome={true} />
       <ElementalProvider elements={elementData}>
-        <CharacterDetailPage character={characterData} />
-        <Suspense fallback={<p className="text-center p-4rem">Loading {characterData.name}&apos;s stat...</p>}>
-          <CharacterStatSection characterName={characterName} characterData={characterData}/>
+        <Suspense fallback={<p className="text-center p-4rem">Loading {characterData.name}&apos;s data...</p>}>
+          <CharacterDetailPage character={characterData} />
         </Suspense>
-        <Suspense fallback={<p className="text-center p-4rem">Loading {characterData.name}&apos;s talents...</p>}>
-          <CharacterTalentSection characterName={characterName}/>
+        <Suspense fallback={<CharacterStatPlaceholder />}>
+          <CharacterStatSection characterName={characterName} characterData={characterData} />
         </Suspense>
-        <Suspense fallback={<p className="text-center p-4rem">Loading {characterData.name}&apos;s constellations...</p>}>
-          <CharacterConstellationSection characterName={characterName} characterData={characterData}/>
+        <Suspense fallback={<CharacterTalentPlaceholder />}>
+          <CharacterTalentSection characterName={characterName} />
+        </Suspense>
+        <Suspense fallback={<CharacterConstellationPlaceholder />}>
+          <CharacterConstellationSection characterName={characterName} characterData={characterData} />
         </Suspense>
       </ElementalProvider>
     </>
@@ -62,7 +67,7 @@ export default async function Page(
 }
 
 async function CharacterTalentSection(
-  {characterName}: {characterName: string}
+  { characterName }: { characterName: string }
 ) {
   const talentData = await getTalentsByCharacterName(characterName);
   return (
@@ -73,7 +78,7 @@ async function CharacterTalentSection(
 }
 
 async function CharacterConstellationSection(
-  {characterName, characterData}: {characterName: string, characterData: Character}
+  { characterName, characterData }: { characterName: string, characterData: Character }
 ) {
   const constellationResponse = await getConstellationsByCharaName(characterName);
   if (!constellationResponse) {
@@ -88,7 +93,7 @@ async function CharacterConstellationSection(
 }
 
 async function CharacterStatSection(
-  {characterName, characterData}: {characterName: string, characterData: Character}
+  { characterName, characterData }: { characterName: string, characterData: Character }
 ) {
   const cStat = await getCharacterStatsByName(characterName);
   return (
