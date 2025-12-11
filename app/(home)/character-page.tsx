@@ -149,13 +149,25 @@ function CharacterCardCollection({ characters }: {
           {rarities.map(r => <option key={String(r)} value={String(r)}>{String(r)}</option>)}
         </select>
         <div className="flex flex-grow w-full lg:w-auto gap-4">
-          <input
-            type="text"
-            placeholder="Search by name"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="bg-black/40 border border-white/30 rounded px-2 py-1 flex-grow w-auto"
-          />
+          <div className="bg-black/40 border border-white/30 rounded px-2 py-1 flex items-center flex-grow">
+            <input
+              type="text"
+              placeholder="Search by name..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="px-2 py-1 flex-grow w-auto"
+            >
+            </input>
+            {search && (
+              <button
+                onClick={() => setSearch("")}
+                className="bg-black/40 border border-white/30 rounded px-2 py-1 flex items-center gap-2 hover:bg-white/20 transition-colors"
+                title="Clear search"
+              >
+                &#x2715;
+              </button>
+            )}
+          </div>
           <button
             onClick={() => setSortByVersion(sortByVersion === 'asc' ? 'desc' : 'asc')}
             className="bg-black/40 border border-white/30 rounded px-2 py-1 flex items-center gap-2 hover:bg-white/20 transition-colors"
