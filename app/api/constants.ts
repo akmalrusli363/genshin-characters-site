@@ -5,6 +5,7 @@ import Talents from "../data/talents"
 import { fetchData } from "../utils/etagCache"
 import CharacterStat from "../data/chara-stat"
 import { RawConstellationData } from "../data/constellations"
+import Namecard from "../data/namecard"
 
 const baseUrl = "https://genshin-db-api.vercel.app/api/v5/"
 const charactersUrl = "characters"
@@ -12,6 +13,7 @@ const elementsUrl = "elements"
 const talentsUrl = "talents"
 const constellationsUrl = "constellations"
 const statsUrl = "stats"
+const namecardsUrl = "namecards"
 
 export const baseWikiaUrl = "https://genshin-impact.fandom.com/wiki/"
 
@@ -36,22 +38,31 @@ export const getUiIconPath = (value: string) => "https://enka.network/ui/" + val
 export const getUiItemIconPath = (itemId: number) => `https://enka.network/ui/UI_ItemIcon_${itemId}.png`;
 
 export const getAllCharacters = async () =>
-    fetchData<Character[]>(`${baseUrl + charactersUrl}?${getAllParameters}`)
+  fetchData<Character[]>(`${baseUrl + charactersUrl}?${getAllParameters}`)
 
 export const getAllElements = async () => {
-    const response = await fetchData<ElementResponse[]>(`${baseUrl + elementsUrl}?${getAllParameters}`)
-    return response && response.map(mapElementResponseToElement)
+  const response = await fetchData<ElementResponse[]>(`${baseUrl + elementsUrl}?${getAllParameters}`)
+  return response && response.map(mapElementResponseToElement)
 }
 
 export const getCharacterByName = cache(async (name: string) =>
-    fetchData<Character>(`${baseUrl + charactersUrl}?${getParameterByQuery(name)}`))
+  fetchData<Character>(`${baseUrl + charactersUrl}?${getParameterByQuery(name)}`))
 
-export const getConstellationsByCharaName = async (name: string) =>
-    fetchData<RawConstellationData>(`${baseUrl + constellationsUrl}?${getParameterByQuery(name)}`)
+export const getConstellationsByCharaName = async (name: string) => {
+  return fetchData<RawConstellationData>(`${baseUrl + constellationsUrl}?${getParameterByQuery(name)}`)
+}
 
-export const getTalentsByCharacterName = async (name: string) =>
-    fetchData<Talents|null>(`${baseUrl + talentsUrl}?${getParameterByQuery(name)}`)
+export const getTalentsByCharacterName = async (name: string) => {
+  return fetchData<Talents | null>(`${baseUrl + talentsUrl}?${getParameterByQuery(name)}`)
+}
 
-export const getCharacterStatsByName = async (name: string) =>
-    fetchData<Record<string, CharacterStat>>(`${baseUrl + statsUrl}?${getStatByQuery(name)}`)
+export const getCharacterStatsByName = async (name: string) => {
+  return fetchData<Record<string, CharacterStat>>(`${baseUrl + statsUrl}?${getStatByQuery(name)}`)
+}
 
+export const getCharacterNameCard = async (name: string) =>
+  fetchData<Namecard>(`${baseUrl + namecardsUrl}?${getParameterByQuery(name)}`)
+
+export const getAllNamecards = async () => {
+  return fetchData<Namecard[]>(`${baseUrl + namecardsUrl}?${getAllParameters}`)
+}
