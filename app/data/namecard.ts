@@ -8,16 +8,20 @@ export default interface Namecard {
   version: string;
 }
 
-export type NamecardCategory = "friendship"
-  | "reputation"
-  | "level"
-  | "quests"
-  | "achievements"
-  | "collaboration"
-  | "event"
-  | "battle-pass"
-  | "default"
-  | "others"
+export const namecardCategories = [
+  "friendship",
+  "reputation",
+  "level",
+  "quests",
+  "achievements",
+  "collaboration",
+  "event",
+  "battle-pass",
+  "default",
+  "others"
+] as const;
+
+export type NamecardCategory = (typeof namecardCategories)[number];
 
 export interface NamecardImages {
   filename_icon: string;
