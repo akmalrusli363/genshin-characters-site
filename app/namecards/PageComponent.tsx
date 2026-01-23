@@ -113,7 +113,7 @@ function NameCardGroup(
   { namecards, label }: { namecards: NamecardProps[], label?: string }
 ) {
   return <div>
-    {label && <h3 className="text-2xl text-center m-4">{label}</h3>}
+    {label && <h3 className="text-2xl text-center m-4">{label[0].toUpperCase() + label.slice(1)}</h3>}
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 m-4">
       {namecards.map((namecard) => {
         return <NameCard key={namecard.id} nameCardData={namecard} />
@@ -125,8 +125,8 @@ function NameCardGroup(
 function NameCard(
   { nameCardData }: { nameCardData: NamecardProps }
 ) {
-  const chip = (
-    <div className="rounded-[64px] border border-white/20 text-sm pl-2 pr-2 w-fit h-fit place-self-center" title={nameCardData.source[0] ?? "Unknown source"}>{nameCardData.category}</div>
+  const Chip = (text: string, tooltip: string) => (
+    <div className="rounded-[64px] border border-white/20 text-sm pl-2 pr-2 w-fit h-fit place-self-center" title={tooltip}>{text}</div>
   )
   return (
     <div className="relative flex rounded-[64px] border border-white/20 justify-between m-1 overflow-hidden hover:shadow-lg hover:scale-102 transition-all duration-300">
@@ -142,7 +142,8 @@ function NameCard(
         <div className="flex flex-col w-full gap-1 justify-start text-start mt-2 mb-2 ml-4">
           <div className="flex gap-2">
             <h2 className="text-2xl font-semibold">{nameCardData.name}</h2>
-            {chip}
+            {Chip(nameCardData.category, nameCardData.source[0] ?? "Unknown source")}
+            {nameCardData.version && Chip(`v${nameCardData.version}`, `Released at version ${nameCardData.version}`)}
           </div>
           <p className="text-sm line-clamp-2 text-ellipsis">{nameCardData.description}</p>
         </div>
