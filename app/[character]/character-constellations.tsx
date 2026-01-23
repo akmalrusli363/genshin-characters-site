@@ -5,7 +5,7 @@ import Image from "next/image";
 import Constellations, { ConstellationDetail } from "../data/constellations";
 import CharacterConstellationPlaceholder from "./placeholder/character-constellation-placeholder";
 
-export default function CharacterConstellations({ constellations, constellationName }: { constellations: Constellations, constellationName?: string }) {
+export default function CharacterConstellations({ constellations, constellationName, constellationImagePath }: { constellations: Constellations, constellationName?: string, constellationImagePath?: string }) {
   if (!constellations) {
     return CharacterConstellationPlaceholder();
   }
@@ -14,6 +14,18 @@ export default function CharacterConstellations({ constellations, constellationN
     <div className={`flex flex-col lg:flex-row items-center lg:items-start gap-8 p-4 md:p-8 bg-black/40 rounded-xl border border-white/20 backdrop-blur-sm max-w-4xl mx-auto my-8`}>
       <div className="flex flex-col gap-4 text-center lg:text-left">
         <h2 className={"text-2xl md:text-4xl font-bold"}>Constellations {constellationName && <i>({constellationName})</i>}</h2>
+        {constellationImagePath &&
+          <div className="flex justify-center mb-4">
+            <Image
+              src={constellationImagePath}
+              alt={constellationName ? constellationName : "No constellation image"}
+              width={480}
+              height={480}
+              className="w-10rem h-10rem self-center transition-all brightness-150 drop-shadow-lg drop-shadow-white/40"
+              style={{ objectFit: "contain" }}
+              title={constellations ? constellationName : "-"} />
+          </div>
+        }
         <div className="flex flex-col lg:justify-start gap-4">
           <ConstellationCard constellation={constellations.c1} />
           <ConstellationCard constellation={constellations.c2} />
@@ -21,7 +33,7 @@ export default function CharacterConstellations({ constellations, constellationN
           <ConstellationCard constellation={constellations.c4} />
           <ConstellationCard constellation={constellations.c5} />
           <ConstellationCard constellation={constellations.c6} />
-          </div>
+        </div>
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { getAllElements, getCharacterByName, getCharacterStatsByName, getConstellationsByCharaName, getTalentsByCharacterName } from "@/app/api/constants";
+import { getAllElements, getCharacterByName, getCharacterStatsByName, getConstellationsByCharaName, getTalentsByCharacterName, getUiIconPath } from "@/app/api/constants";
 import { ElementalProvider } from "@/app/element-context";
 import CharacterDetailPage from "@/app/[character]/character-detail-page";
 import { fromSlug, normalizeSlug } from "@/app/utils/slugify";
@@ -13,6 +13,7 @@ import { Suspense } from "react";
 import CharacterStatPlaceholder from "./placeholder/character-stat-placeholder";
 import CharacterTalentPlaceholder from "./placeholder/character-talent-placeholder";
 import CharacterConstellationPlaceholder from "./placeholder/character-constellation-placeholder";
+import { checkForAvailableLinkAsync } from "../utils/linkTest";
 
 export async function generateMetadata({ params }: { params: Promise<{ character: string }> }) {
   const { character } = await params;
@@ -85,9 +86,15 @@ async function CharacterConstellationSection(
     return null;
   }
   const constellationData = mapToConstellationData(constellationResponse);
+  const constellationImagePath = await checkForAvailableLinkAsync(getUiIconPath(constellationData.imagePath)) ? getUiIconPath(constellationData.imagePath) : undefined;
   return (
     <>
-      {constellationData && !Array.isArray(constellationData) && <CharacterConstellations constellations={constellationData} constellationName={characterData.constellation} />}
+      {constellationData && !Array.isArray(constellationData) &&
+        <CharacterConstellations
+          constellations={constellationData}
+          constellationName={characterData.constellation}
+          constellationImagePath={constellationImagePath} />
+      }
     </>
   )
 }
