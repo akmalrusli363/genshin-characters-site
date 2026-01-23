@@ -16,7 +16,7 @@ import CharacterConstellationPlaceholder from "./placeholder/character-constella
 
 export async function generateMetadata({ params }: { params: Promise<{ character: string }> }) {
   const { character } = await params;
-  const characterData = await getCharacterByName(character);
+  const characterData = await getCharacterByName(character.replace(/-/g, ""));
   if (!characterData) {
     return notFound();
   }
@@ -39,7 +39,7 @@ export default async function Page(
   const characterName = fromSlug(canonCharacterName);
 
   const [characterData, elementData] = await Promise.all([
-    getCharacterByName(characterName),
+    getCharacterByName(characterName.replace(/-/g, "")),
     getAllElements(),
   ])
   if (!characterData || !elementData) {
