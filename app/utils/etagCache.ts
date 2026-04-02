@@ -12,7 +12,9 @@ async function fetchWithoutEtag<T>(url: string | URL): Promise<T | undefined> {
 
   let res: Response | undefined;
   try {
-    res = await fetch(url);
+    res = await fetch(url, {
+      next: { revalidate: 60 * 60 * 24 },
+    });
   } catch (error) {
     console.error(`[Fetch] Network error for ${urlString}:`, error);
     // Re-throw the error so the caller can handle it, e.g., by showing an error page.
@@ -67,7 +69,7 @@ export async function fetchWithEtag<T>(url: string | URL): Promise<T | undefined
 
   let res: Response;
   try {
-    res = await fetch(url, { headers });
+    res = await fetch(url, { headers, next: { revalidate: 60 * 60 * 24 } });
   } catch (error) {
     console.error(`[Fetch] Network error for ${urlString}:`, error);
     // Re-throw the error so the caller can handle it, e.g., by showing an error page.

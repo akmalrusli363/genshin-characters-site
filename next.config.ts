@@ -9,7 +9,8 @@ module.exports = {
     remotePatterns: [
       new URL('https://static.wikia.nocookie.net/gensin-impact/images/**'),
       new URL('https://enka.network/ui/**'),
-      new URL('https://upload-os-bbs.mihoyo.com/**')
+      new URL('https://upload-os-bbs.mihoyo.com/**'),
+      new URL('https://api.lunaris.moe/data/assets/items/**'),
     ],
   },
 }
