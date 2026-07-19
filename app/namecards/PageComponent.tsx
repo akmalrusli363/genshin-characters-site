@@ -12,9 +12,12 @@ export function NameCardListClient(
   const [search, setSearch] = useState("");
   const [groupedByCategory, setGroupByCategory] = useState(false);
   const [activeCategories, setActiveCategories] = useState<Set<NamecardCategory>>(new Set(namecardCategories));
+  const [categoryOrder, setCategoryOrder] = useState<NamecardCategory[]>([...namecardCategories]);
+  const dragIndexRef = useRef<number | null>(null);
 
   const resetCategory = () => {
     setActiveCategories(new Set(namecardCategories));
+    setCategoryOrder([...namecardCategories]);
   };
 
   const toggleCategory = (category: NamecardCategory) => {
@@ -31,9 +34,14 @@ export function NameCardListClient(
     });
   };
 
+  const toggleSingleCategory = (category: NamecardCategory) => {
+    setActiveCategories(new Set([category]));
+  }
+
   const filteredAndSortedNamecards = namecards.filter(
     nc => activeCategories.has(nc.category) && nc.name.toLowerCase().includes(search.toLowerCase())
-  )//.sort((a, b) => namecardCategories.indexOf(a.category) - namecardCategories.indexOf(b.category));
+  ).sort((a, b) => a.sortOrder - b.sortOrder)
+  // .sort((a, b) => categoryOrder.indexOf(a.category) - categoryOrder.indexOf(b.category));
 
   const grouped = filteredAndSortedNamecards.reduce((acc, curr) => {
     (acc[curr.category] ??= []).push(curr);
@@ -72,6 +80,17 @@ export function NameCardListClient(
       </svg>
     )
   }
+  const HintClickIcon = () => {
+    return (
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-pointer-icon lucide-pointer">
+        <path d="M22 14a8 8 0 0 1-8 8"/>
+        <path d="M18 11v-1a2 2 0 0 0-2-2a2 2 0 0 0-2 2"/>
+        <path d="M14 10V9a2 2 0 0 0-2-2a2 2 0 0 0-2 2v1"/>
+        <path d="M10 9.5V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v10"/>
+        <path d="M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/>
+      </svg>
+    )
+  }
   const ResetIcon = () => {
     return (
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path fillRule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z" />
@@ -79,12 +98,35 @@ export function NameCardListClient(
       </svg>
     )
   }
+  // console.log("Rendering NameCardListClient with", { namecards, filteredAndSortedNamecards, groupedByCategory, activeCategories, categoryOrder });
   const chipList = (
     <div className="flex flex-row flex-wrap gap-2 items-center justify-center">
-      {namecardCategories.map((category) => {
+      {categoryOrder.map((category, index) => {
         const isActive = activeCategories.has(category);
         return (
-          <button key={category} onClick={() => toggleCategory(category)} className={`rounded-[64px] border text-sm pl-3 pr-3 pt-1 pb-1 w-fit h-fit place-self-center transition-colors ${isActive ? 'bg-white/90 text-black border-white/90' : 'border-white/20 bg-black/30 text-white/80 hover:bg-white/10'}`} title={category}>{category}</button>
+          <button
+            key={category}
+            draggable
+            onClick={() => toggleCategory(category)}
+            onDoubleClick={() => toggleSingleCategory(category)}
+            onDragStart={(e) => { dragIndexRef.current = index; e.dataTransfer?.setData('text/plain', category); }}
+            onDragOver={(e) => { e.preventDefault(); }}
+            onDrop={(e) => {
+              e.preventDefault();
+              const from = dragIndexRef.current;
+              const to = index;
+              if (from === null || from === to) return;
+              const newOrder = [...categoryOrder];
+              const [moved] = newOrder.splice(from, 1);
+              newOrder.splice(to, 0, moved);
+              setCategoryOrder(newOrder);
+              dragIndexRef.current = null;
+            }}
+            className={`rounded-[64px] border text-sm pl-3 pr-3 pt-1 pb-1 w-fit h-fit place-self-center transition-colors ${isActive ? 'bg-white/90 text-black border-white/90' : 'border-white/20 bg-black/30 text-white/80 hover:bg-white/10'}`}
+            title={category}
+          >
+            {category}
+          </button>
         )
       })}
       <button key="reset" onClick={() => resetCategory()} className={`rounded-[64px] border text-sm pl-3 pr-3 pt-1 pb-1 w-fit h-fit place-self-center transition-colors bg-white/90 text-black border-white/90 flex items-center gap-1`} title="reset">
@@ -95,14 +137,21 @@ export function NameCardListClient(
   return (
     <div className="pb-8">
       <h1 className="text-4xl text-center m-4 mt-6 mb-6">Namecards</h1>
-      <button key="reset" onClick={() => setGroupByCategory(!groupedByCategory)} className={`rounded-[64px] border text-sm pl-3 pr-3 pt-1 pb-1 w-fit h-fit place-self-center transition-colors flex items-center gap-1 ${groupedByCategory ? 'bg-white/90 text-black border-white/90' : 'border-white/20 bg-black/30 text-white/80 hover:bg-white/10'}`} title="toggle-group">
-        <CategorizeIcon /><span>Categorize</span>
-      </button>
+      <div className="flex flex-row items-center justify-center gap-2">
+        <button key="reset" onClick={() => setGroupByCategory(!groupedByCategory)} className={`rounded-[64px] border text-sm pl-3 pr-3 pt-1 pb-1 w-fit h-fit place-self-center transition-colors flex items-center gap-1 ${groupedByCategory ? 'bg-white/90 text-black border-white/90' : 'border-white/20 bg-black/30 text-white/80 hover:bg-white/10'}`} title="toggle-group">
+          <CategorizeIcon /><span>Categorize</span>
+        </button>
+        <div className={`rounded-[64px] border text-sm pl-3 pr-3 pt-1 pb-1 w-fit h-fit place-self-center transition-colors flex items-center gap-1 border-white/20 bg-black/30 text-white/80 hover:bg-white/10`} title="hint">
+          <span><strong>Hint:</strong> click category chip button to toggle category, double click to filter by selected category</span>
+        </div>
+      </div>
       {sortFilterSearchPanel}
       {chipList}
       {groupedByCategory ? (
         <div>
-          { Object.entries(grouped).map(([s, e]) => <NameCardGroup namecards={e} label={s} key={s} />)}
+          {Object.entries(grouped)
+            .sort((a, b) => categoryOrder.indexOf(a[0] as NamecardCategory) - categoryOrder.indexOf(b[0] as NamecardCategory))
+            .map(([s, e]) => <NameCardGroup namecards={e} label={s} key={s} />)}
         </div>
       ) : <NameCardGroup namecards={filteredAndSortedNamecards} />}
     </div>
@@ -138,7 +187,7 @@ function NameCard(
           className="absolute inset-0 w-auto h-full object-cover place-self-end" />
       )}
       <div className="relative z-10 flex flex-row pl-4 w-full items-center bg-black/50 rounded-[64px] pr-4">
-        <Image src={getUiIconPath(nameCardData.images.filename_icon ?? "/assets/Icon_Unknown.png")} alt={nameCardData.name} width={96} height={64} className="w-5rem h-3rem ml-2 mr-2 transition-all shrink-0" style={{ objectFit: "contain" }} />
+        <Image src={getUiNamecardIconPath(nameCardData.images.filename_icon ?? "/assets/Icon_Unknown.png")} alt={nameCardData.name} width={96} height={64} className="w-5rem h-3rem ml-2 mr-2 transition-all shrink-0" style={{ objectFit: "contain" }} />
         <div className="flex flex-col w-full gap-1 justify-start text-start mt-2 mb-2 ml-4">
           <div className="flex gap-2">
             <h2 className="text-2xl font-semibold">{nameCardData.name}</h2>
