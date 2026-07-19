@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useMemo } from "react";
+import Link from "next/link";
 import { getUnique } from "@/app/helpers";
 import CharacterTableView from "./character-table";
 import CharacterCard from "./character-card";
@@ -11,6 +12,7 @@ export default function CharacterListPage({ characters }: {
   characters: Character[] | undefined
 }) {
   const [glowMode, setGlowMode] = useState(false);
+  const [navOpen, setNavOpen] = useState(false);
   
   if (!characters) return <p className="center text-center text-2xl w-screen p-8 h-screen">No characters found</p>;
 
@@ -35,13 +37,46 @@ export default function CharacterListPage({ characters }: {
           </div>
         </section>
       </main>
-      <button
-        onClick={() => setGlowMode(!glowMode)}
-        className={`fixed bottom-4 right-4 z-50 p-3 text-white rounded-full shadow-lg backdrop-blur-sm transition-colors ${glowMode ? 'bg-amber-400/50 hover:bg-amber-200/50' : 'bg-gray-700/50 hover:bg-white/20'}`}
-        title={`Toggle Glow Mode: ${glowMode ? 'On' : 'Off'}`}
-      >
-        <GlowIcon enabled={glowMode} />
-      </button>
+      <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-2">
+        {navOpen && (
+          <nav
+            id="floating-nav-menu"
+            aria-label="Quick navigation"
+            className="flex flex-col rounded-2xl border border-white/20 bg-black/70 p-2 shadow-lg backdrop-blur-sm"
+          >
+            <Link
+              href="/"
+              onClick={() => window.navigation.navigate("/")}
+              className="rounded-xl px-3 py-2 text-sm text-white/90 transition-colors hover:bg-white/15"
+            >
+              Characters
+            </Link>
+            <Link
+              href="/namecards"
+              onClick={() => window.navigation.navigate("/namecards")}
+              className="rounded-xl px-3 py-2 text-sm text-white/90 transition-colors hover:bg-white/15"
+            >
+              Namecards
+            </Link>
+          </nav>
+        )}
+        <button
+          onClick={() => setNavOpen(!navOpen)}
+          aria-expanded={navOpen}
+          aria-controls="floating-nav-menu"
+          className="p-3 text-white rounded-full shadow-lg backdrop-blur-sm transition-colors bg-gray-700/50 hover:bg-white/20"
+          title={navOpen ? 'Close navigation menu' : 'Open navigation menu'}
+        >
+          <MenuIcon />
+        </button>
+        <button
+          onClick={() => setGlowMode(!glowMode)}
+          className={`p-3 text-white rounded-full shadow-lg backdrop-blur-sm transition-colors ${glowMode ? 'bg-amber-400/50 hover:bg-amber-200/50' : 'bg-gray-700/50 hover:bg-white/20'}`}
+          title={`Toggle Glow Mode: ${glowMode ? 'On' : 'Off'}`}
+        >
+          <GlowIcon enabled={glowMode} />
+        </button>
+      </div>
       <footer className="flex w-full items-center justify-center gap-[24px] p-8 flex-wrap">
         Built using Next.js
       </footer>
@@ -268,6 +303,14 @@ function PaginationControls({ currentPage, totalPages, onPageChange }: {
 const SortIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
     <path d="M3.5 2.5a.5.5 0 0 0-1 0v10a.5.5 0 0 0 1 0zm2.5 10a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m-2-4a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m2-4a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5"/>
+  </svg>
+);
+
+const MenuIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="4" y1="7" x2="20" y2="7" />
+    <line x1="4" y1="12" x2="20" y2="12" />
+    <line x1="4" y1="17" x2="20" y2="17" />
   </svg>
 );
 
