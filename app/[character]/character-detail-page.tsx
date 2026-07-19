@@ -10,11 +10,11 @@ export default function CharacterDetailPage({ character }: { character: Characte
   const elements = useElements();
 
   const [characterBirthday, setCharacterBirthday] = useState(character.birthday);
-  
+
   useEffect(() => {
     const birthdayDate = new Date(character.birthday);
     birthdayDate.setFullYear(2020);
-    const birthday = birthdayDate.toLocaleDateString(undefined, {month:'long',day:'numeric'});
+    const birthday = birthdayDate.toLocaleDateString(undefined, { month: 'long', day: 'numeric' });
     setCharacterBirthday(birthday);
   }, [character]);
 
@@ -51,7 +51,12 @@ export default function CharacterDetailPage({ character }: { character: Characte
       </div>
 
       <div className="flex flex-col gap-4 text-center lg:text-left">
-        <h2 className={"text-4xl font-bold"}>{character.name}</h2>
+        <hgroup className="flex flex-col lg:flex-row gap-2 items-center justify-center lg:justify-start">
+          <h2 className={"text-4xl font-bold"}>{character.name}</h2>
+          {character.title && (
+            <p aria-roledescription="subtitle" className="italic">({character.title})</p>
+          )}
+        </hgroup>
 
         <div className="flex items-center justify-center lg:justify-start gap-4">
           <span className="text-lg">{character.rarity}★</span>
@@ -69,7 +74,7 @@ export default function CharacterDetailPage({ character }: { character: Characte
           <span className="font-semibold">Region:</span> {character.region || "Outworld"}
           <span className="font-semibold ml-4">Constellation:</span> {character.constellation || "-"}
         </p>
-        
+
         {character.birthdaymmdd && (
           <p className="text-lg">
             <span className="font-semibold">Birthday:</span> {characterBirthday} ({character.birthdaymmdd})
