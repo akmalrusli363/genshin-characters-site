@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { getCharacterNameCard, getUiIconPath, getUiNamecardIconPath } from "../api/constants";
+import { getCharacterNameCard, getUiIconPath, getUiNamecardPath } from "../api/constants";
 import Character from "../data/character";
 
 export default async function CharacterFancyCard({ character }: { character: Character }) {
@@ -20,7 +20,7 @@ export default async function CharacterFancyCard({ character }: { character: Cha
           <p>{character?.elementText} {character?.weaponText}</p>
         </div>
       </div>
-      <Image src={getUiNamecardIconPath(cFancy?.images.filename_banner ?? "/assets/Icon_Unknown.png")} alt={characterName} title={getUiIconPath(cFancy?.images.filename_banner ?? "")} width={600} height={96} className="w-16rem h-3rem transition-all" style={{ objectFit: "contain" }}/>
+      <Image src={getUiNamecardPath(cFancy?.images.filename_banner ?? "/assets/Icon_Unknown.png")} alt={characterName} title={getUiIconPath(cFancy?.images.filename_banner ?? "")} width={600} height={96} className="w-16rem h-3rem transition-all" style={{ objectFit: "contain" }}/>
     </div>
   )
 

@@ -1,6 +1,6 @@
 'use client';
-import { use, useState } from "react";
-import { getUiIconPath } from "../api/constants";
+import { useState, useRef } from "react";
+import { getUiNamecardIconPath, getUiNamecardPath } from "../api/constants";
 import Namecard, { NamecardCategory, namecardCategories } from "../data/namecard";
 import Image from "next/image";
 
@@ -132,8 +132,8 @@ function NameCard(
     <div className="relative flex rounded-[64px] border border-white/20 justify-between m-1 overflow-hidden hover:shadow-lg hover:scale-102 transition-all duration-300">
       {nameCardData.images.filename_banner && (
         <Image
-          src={getUiIconPath(nameCardData.images.filename_banner ?? "/assets/Icon_Unknown.png")}
-          alt={nameCardData.name} title={getUiIconPath(nameCardData.images.filename_banner ?? "")}
+          src={getUiNamecardPath(nameCardData.images.filename_banner ?? "/assets/Icon_Unknown.png")}
+          alt={nameCardData.name} title={getUiNamecardPath(nameCardData.images.filename_banner ?? "")}
           width={600} height={120}
           className="absolute inset-0 w-auto h-full object-cover place-self-end" />
       )}
