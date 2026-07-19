@@ -13,6 +13,7 @@ import { Suspense } from "react";
 import CharacterStatPlaceholder from "./placeholder/character-stat-placeholder";
 import CharacterTalentPlaceholder from "./placeholder/character-talent-placeholder";
 import CharacterConstellationPlaceholder from "./placeholder/character-constellation-placeholder";
+import CharacterFancyCard from "./character-cards";
 import { checkForAvailableLinkAsync } from "../utils/linkTest";
 
 export async function generateMetadata({ params }: { params: Promise<{ character: string }> }) {
@@ -61,6 +62,9 @@ export default async function Page(
         </Suspense>
         <Suspense fallback={<CharacterConstellationPlaceholder />}>
           <CharacterConstellationSection characterName={characterName} characterData={characterData} />
+        </Suspense>
+        <Suspense fallback={<CharacterStatPlaceholder />}>
+          <CharacterFancyCard character={characterData} />
         </Suspense>
       </ElementalProvider>
     </>
