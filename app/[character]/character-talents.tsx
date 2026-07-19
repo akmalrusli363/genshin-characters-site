@@ -4,6 +4,7 @@ import Talents, { CombatData } from "../data/talents";
 import { getUiIconPath } from "../api/constants";
 import Image from "next/image";
 import CharacterTalentPlaceholder from "./placeholder/character-talent-placeholder";
+import Markdown from "react-markdown";
 
 enum TalentCategories {
   NORMAL = "Normal Attack",
@@ -27,7 +28,7 @@ export default function CharacterTalents({ talents }: { talents: Talents }) {
           <span className="text-xl underline lg:no-underline underline-offset-8">Combats</span>
           <TalentCard talent={talents.combat1} imagePath={talents.images.filename_combat1} type={TalentCategories.NORMAL} />
           <TalentCard talent={talents.combat2} imagePath={talents.images.filename_combat2} type={TalentCategories.SKILL} />
-          <TalentCard talent={talents.combat3} imagePath={talents.images.filename_combat3} type={TalentCategories.BURST} />
+          <TalentCard talent={talents.combat3} imagePath={talents.images.filename_combat3.replace("_HD", "")} type={TalentCategories.BURST} />
           <span className="text-xl underline lg:no-underline underline-offset-8">Ascension Passives (Extra Talents)</span>
           <TalentCard talent={talents.passive1} imagePath={talents.images.filename_passive1} type={TalentCategories.PASSIVE} />
           <TalentCard talent={talents.passive2} imagePath={talents.images.filename_passive2} type={TalentCategories.PASSIVE} />
@@ -45,7 +46,7 @@ export default function CharacterTalents({ talents }: { talents: Talents }) {
 function TalentCard({ talent, imagePath, type }: { talent: CombatData, imagePath: string | undefined, type: TalentCategories }) {
   return (
     <div className="flex flex-row gap-4">
-      <div className="flex flex-1/9 grow-0 flex-col shrink-0 break-words break-all justify-center gap-2">
+      <div className="flex flex-1/9 grow-0 flex-col shrink-0 wrap-break-word break-all justify-center gap-2">
         <Image
           src={imagePath ? getUiIconPath(imagePath) : "/assets/Icon_Unknown.png"}
           alt={talent ? talent.name : "No talent"}
@@ -58,7 +59,18 @@ function TalentCard({ talent, imagePath, type }: { talent: CombatData, imagePath
       </div>
       <div className="flex flex-col w-full gap-2 justify-start text-start">
         <p className="text-lg font-semibold mb-2">{talent?.name ?? `Unknown ${type}`}</p>
-        <p className="text-base leading-relaxed">{talent?.description ?? "No description available."}</p>
+        <Markdown
+          components={{
+            p: ({ children }) => (
+              <p className="text-base leading-relaxed">{children}</p>
+            ),
+            strong: ({ children }) => (
+              <strong className="font-bold">{children}</strong>
+            ),
+          }}
+        >
+          {talent?.description ?? "No description available."}
+        </Markdown>
       </div>
     </div>
   );
