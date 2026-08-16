@@ -35,7 +35,8 @@ const getStatByQuery = (query: string) => new URLSearchParams({
 })
 
 export const getUiIconPath = (value: string) => "https://enka.network/ui/" + value + ".png";
-export const getUiNamecardIconPath = (value: string) => `https://api.lunaris.moe/data/assets/namecardalpha/${value}.png`;
+export const getUiNamecardIconPath = (value: string) => `https://api.lunaris.moe/data/assets/namecardicon/${value}.png`;
+export const getUiNamecardPath = (value: string) => `https://api.lunaris.moe/data/assets/namecardalpha/${value}.png`;
 export const getUiItemIconPath = (itemId: number) => `https://api.lunaris.moe/data/assets/items/UI_ItemIcon_${itemId}.png`;
 
 export const getAllCharacters = async () =>
