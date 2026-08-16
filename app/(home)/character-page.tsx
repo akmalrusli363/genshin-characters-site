@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, MouseEvent } from "react";
 import Link from "next/link";
 import { getUnique } from "@/app/helpers";
 import CharacterTableView from "./character-table";
@@ -13,8 +13,13 @@ export default function CharacterListPage({ characters }: {
 }) {
   const [glowMode, setGlowMode] = useState(false);
   const [navOpen, setNavOpen] = useState(false);
-  
+
   if (!characters) return <p className="center text-center text-2xl w-screen p-8 h-screen">No characters found</p>;
+
+  const hardNavigateTo = (e: MouseEvent<HTMLAnchorElement>, url: string) => {
+    e.preventDefault();
+    window.location.assign(url);
+  }
 
   return (
     <div className="font-sans grid grid-rows-[1fr_auto] min-h-screen justify-items-center bg-gradient-to-b from-blue-900 via-black to-black text-white">
@@ -46,14 +51,14 @@ export default function CharacterListPage({ characters }: {
           >
             <Link
               href="/"
-              onClick={() => window.navigation.navigate("/")}
+              onClick={(e) => hardNavigateTo(e, "/")}
               className="rounded-xl px-3 py-2 text-sm text-white/90 transition-colors hover:bg-white/15"
             >
               Characters
             </Link>
             <Link
               href="/namecards"
-              onClick={() => window.navigation.navigate("/namecards")}
+              onClick={(e) => hardNavigateTo(e, "/namecards")}
               className="rounded-xl px-3 py-2 text-sm text-white/90 transition-colors hover:bg-white/15"
             >
               Namecards
@@ -139,14 +144,14 @@ function CharacterCardCollection({ characters }: {
   // Filter characters based on selection
   const allFilteredCharacters = useMemo(() => {
     const filtered = characters
-    .filter(c => c.name)
-    .filter(c =>
-      (!region || c.region === region) &&
-      (!element || c.elementText === element) &&
-      (!weapon || c.weaponText === weapon) &&
-      (!rarity || c.rarity === rarity) &&
-      (!search || c.name.toLowerCase().includes(search.toLowerCase()))
-    );
+      .filter(c => c.name)
+      .filter(c =>
+        (!region || c.region === region) &&
+        (!element || c.elementText === element) &&
+        (!weapon || c.weaponText === weapon) &&
+        (!rarity || c.rarity === rarity) &&
+        (!search || c.name.toLowerCase().includes(search.toLowerCase()))
+      );
 
     return filtered.sort((a, b) => {
       return sortByVersion === 'asc'
@@ -302,7 +307,7 @@ function PaginationControls({ currentPage, totalPages, onPageChange }: {
 
 const SortIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-    <path d="M3.5 2.5a.5.5 0 0 0-1 0v10a.5.5 0 0 0 1 0zm2.5 10a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m-2-4a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m2-4a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5"/>
+    <path d="M3.5 2.5a.5.5 0 0 0-1 0v10a.5.5 0 0 0 1 0zm2.5 10a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m-2-4a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m2-4a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5" />
   </svg>
 );
 
